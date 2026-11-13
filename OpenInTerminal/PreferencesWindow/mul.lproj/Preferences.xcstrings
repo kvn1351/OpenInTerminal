@@ -122,61 +122,61 @@
       }
     },
     "2we-f7-s2N.title" : {
-      "comment" : "Class = \"NSButtonCell\"; title = \"Apply to Finder Toolbar Menu\"; ObjectID = \"2we-f7-s2N\";",
+      "comment" : "Class = \"NSButtonCell\"; title = \"Edit Finder Toolbar Menu\"; ObjectID = \"2we-f7-s2N\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Auf das Finder-Symbolleistenmenü anwenden"
+            "value" : "Finder-Symbolleistenmenü bearbeiten"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Apply to Finder Toolbar Menu"
+            "value" : "Edit Finder Toolbar Menu"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aplicar al menú de la barra de herramientas del Finder"
+            "value" : "Editar el menú de la barra de herramientas del Finder"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Appliquer au menu de la barre d'outils du Finder"
+            "value" : "Modifier le menu de la barre d’outils du Finder"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Applica al Menu della Barra Strumenti del Finder"
+            "value" : "Modifica il menu della barra strumenti del Finder"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Finder 툴바 메뉴에 적용하기"
+            "value" : "Finder 도구 막대 메뉴 편집"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Применить к меню панели инструментов Finder"
+            "value" : "Изменить меню панели инструментов Finder"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Finder Araç Menüsüne uygula"
+            "value" : "Finder araç çubuğu menüsünü düzenle"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "应用到访达工具栏菜单"
+            "value" : "编辑访达工具栏菜单"
           }
         }
       }
@@ -2774,61 +2774,61 @@
       }
     },
     "RhP-R5-Wwt.title" : {
-      "comment" : "Class = \"NSButtonCell\"; title = \"Apply to Finder Context Menu\"; ObjectID = \"RhP-R5-Wwt\";",
+      "comment" : "Class = \"NSButtonCell\"; title = \"Edit Finder Context Menu\"; ObjectID = \"RhP-R5-Wwt\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Auf das Finder-Kontextmenü anwenden"
+            "value" : "Finder-Kontextmenü bearbeiten"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Apply to Finder Context Menu"
+            "value" : "Edit Finder Context Menu"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aplicar al menú contextual del Finder"
+            "value" : "Editar el menú contextual del Finder"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Appliquer au menu contextuel du Finder"
+            "value" : "Modifier le menu contextuel du Finder"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Applica al Menu Contestuale del Finder"
+            "value" : "Modifica il menu contestuale del Finder"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Finder 우클릭 메뉴에 적용하기"
+            "value" : "Finder 컨텍스트 메뉴 편집"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Применить к контекстному меню Finder"
+            "value" : "Изменить контекстное меню Finder"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Finder İçerik Menüsüne Uygula"
+            "value" : "Finder bağlam menüsünü düzenle"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "应用到访达上下文菜单"
+            "value" : "编辑访达上下文菜单"
           }
         }
       }

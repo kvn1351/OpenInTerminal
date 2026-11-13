@@ -182,48 +182,86 @@ public class DefaultsManager {
         }
     }
     
-    public var customMenuOptions: [App]? {
-        get {
-            guard let appsData = Defaults[.customMenuOptions] else { return nil }
-            do {
-                let apps = try decoder.decode([App].self, from: appsData)
-                return apps
-            } catch {
-                return nil
-            }
-        }
-        
-        set {
-            guard let newValue = newValue else { return }
-            do {
-                let data = try encoder.encode(newValue)
-                Defaults[.customMenuOptions] = data
-            } catch {
-                logw("save custom menu options failed: \(error)")
-            }
+    private func readMenuActions(_ data: Data?) -> [CustomMenuAction] {
+        guard let data else { return [] }
+        do {
+            return try decoder.decode([CustomMenuAction].self, from: data)
+        } catch {
+            logw("Unable to decode custom menu actions: \(error)")
+            return []
         }
     }
-    
-    public var isCustomMenuApplyToToolbar: Bool {
-        get {
-            return Defaults[.customMenuApplyToToolbar]
-        }
-        
-        set {
-            Defaults[.customMenuApplyToToolbar] = newValue
-        }
-    }
-    
-    public var isCustomMenuApplyToContext: Bool {
-        get {
-            return Defaults[.customMenuApplyToContext]
-        }
-        
-        set {
-            Defaults[.customMenuApplyToContext] = newValue
+
+    private func writeMenuActions(_ actions: [CustomMenuAction],
+                                  key: DefaultsKey<Data>) {
+        do {
+            Defaults[key] = try encoder.encode(actions)
+        } catch {
+            logw("Unable to encode custom menu actions: \(error)")
         }
     }
+
+    public var toolbarMenuActions: [CustomMenuAction] {
+        get { readMenuActions(Defaults[.toolbarMenuActions]) }
+        set { writeMenuActions(newValue, key: .toolbarMenuActions) }
+    }
+
+    public var contextMenuActions: [CustomMenuAction] {
+        get { readMenuActions(Defaults[.contextMenuActions]) }
+        set { writeMenuActions(newValue, key: .contextMenuActions) }
+    }
+
+    public func menuActions(for target: CustomMenuTarget) -> [CustomMenuAction] {
+        switch target {
+        case .toolbar: return toolbarMenuActions
+        case .context: return contextMenuActions
+        }
+    }
+
+    public func setMenuActions(_ actions: [CustomMenuAction],
+                               for target: CustomMenuTarget) {
+        switch target {
+        case .toolbar: toolbarMenuActions = actions
+        case .context: contextMenuActions = actions
+        }
+    }
+
+    public func menuAction(withID id: UUID) -> CustomMenuAction? {
+        (toolbarMenuActions + contextMenuActions).first { $0.id == id }
+    }
+
+    /// One-time conversion from the former shared custom-app array. Preserve
+    /// each old menu's enabled state and item order.
+    public func migrateLegacyCustomMenuActionsIfNeeded() {
+        let versionKey = "OIT_CustomMenuMigrationVersion"
+        func markMigrationComplete() {
+            Defaults.set(1, forKey: versionKey)
+            Defaults.synchronize()
+        }
+        guard let data = Defaults[.customMenuOptions] else {
+            markMigrationComplete()
+            return
+        }
+        let applications: [App]
+        do {
+            applications = try decoder.decode([App].self, from: data)
+        } catch {
+            logw("Unable to migrate legacy custom menu options: \(error)")
+            return
+        }
+        let actions = applications.map(CustomMenuAction.init(application:))
+        let hasToolbarSetting = Defaults.object(forKey: DefaultsKeys.customMenuApplyToToolbar._key) != nil
+        let hasContextSetting = Defaults.object(forKey: DefaultsKeys.customMenuApplyToContext._key) != nil
+        let applyToBothWhenUnspecified = !hasToolbarSetting && !hasContextSetting
+        if Defaults[.customMenuApplyToToolbar] || applyToBothWhenUnspecified {
+            toolbarMenuActions = actions
+        }
+        if Defaults[.customMenuApplyToContext] || applyToBothWhenUnspecified {
+            contextMenuActions = actions
+        }
+        markMigrationComplete()
     
+    }
     public var customMenuIconOption: CustomMenuIconOption {
         get {
             let optionValue = Defaults[.customMenuIconOption] ?? "no"
@@ -357,6 +395,7 @@ public class DefaultsManager {
     // MARK: - Advanced Settings
     
     public func firstSetup() {
+        migrateLegacyCustomMenuActionsIfNeeded()
         guard isFirstSetup == false else { return }
         logw("First Setup")
         isFirstSetup = true
@@ -370,8 +409,6 @@ public class DefaultsManager {
         defaultEditor = SupportedApps.textEdit.app
         setNewOption(.terminal, .window)
         setNewOption(.iTerm, .window)
-        isCustomMenuApplyToToolbar = false
-        isCustomMenuApplyToContext = false
         customMenuIconOption = .no
         isPathEscaped = true
         Defaults.synchronize()

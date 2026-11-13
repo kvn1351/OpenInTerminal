@@ -29,6 +29,12 @@ This file records upstream changes manually adapted into this checkout. “Adapt
 
 - **Build-target decision:** Kept PR #281's minimum deployment target unchanged. Xcode 27 build was verified with the command-line `MACOSX_DEPLOYMENT_TARGET=12.0` override, as documented by PR #281; no permanent OS-support increase was adopted.
 
+## Local feature additions (not from an upstream PR)
+
+- **Source:** User request, November 13, 2026.
+- Store separate ordered CLI/application action lists for Finder toolbar and context menus, migrating the prior shared list according to its old per-menu enable flags.
+- Add executable CLI-script actions with optional per-line arguments; launch in the currently selected preferred terminal where a direct command-launch adapter exists.
+
 ## Reviewed, not adapted
 
 - [PR #285](https://github.com/Ji4n1ng/OpenInTerminal/pull/285): Team-ID-prefixed App Group and a Finder toolbar Quick Toggle behavior. The App Group approach does not solve preference sharing for this ad-hoc-signed local build; Quick Toggle is separate and remains unapplied.

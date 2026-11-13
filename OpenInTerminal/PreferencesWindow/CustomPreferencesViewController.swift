@@ -23,8 +23,8 @@ class CustomPreferencesViewController: PreferencesViewController {
     @IBOutlet weak var customMenuTableView: NSTableView!
     @IBOutlet weak var addMenuOptionButton: NSButton!
     var addOptionMenu: NSMenu = NSMenu()
-    @IBOutlet weak var applyToToolbarButton: NSButton!
-    @IBOutlet weak var applyToContextButton: NSButton!
+    @IBOutlet weak var toolbarMenuTargetButton: NSButton!
+    @IBOutlet weak var contextMenuTargetButton: NSButton!
     
     @IBOutlet weak var noIconButton: NSButton!
     @IBOutlet weak var simpleIconButton: NSButton!
@@ -44,11 +44,12 @@ class CustomPreferencesViewController: PreferencesViewController {
     }
     var installedSupportedAppNames: [String] = []
         
-    var customMenuOptions = [App]() {
+    var customMenuTarget: CustomMenuTarget = .context
+    var customMenuActions = [CustomMenuAction]() {
         didSet {
             customMenuTableView.reloadData()
-            if customMenuOptions != DefaultsManager.shared.customMenuOptions {
-                DefaultsManager.shared.customMenuOptions = customMenuOptions
+            if customMenuActions != DefaultsManager.shared.menuActions(for: customMenuTarget) {
+                DefaultsManager.shared.setMenuActions(customMenuActions, for: customMenuTarget)
             }
         }
     }
@@ -69,10 +70,7 @@ class CustomPreferencesViewController: PreferencesViewController {
         DispatchQueue.global(qos: .background).async {
             self.allInstalledAppNames = FinderManager.shared.getAllInstalledApps()
         }
-        // get saved custom menu apps
-        if let customMenuOptions = DefaultsManager.shared.customMenuOptions {
-            self.customMenuOptions = customMenuOptions
-        }
+        selectMenuTarget(customMenuTarget)
         refreshSupportedApps()
         refreshCustomButtons()
         refreshIconTypeOptionState()
@@ -136,20 +134,17 @@ class CustomPreferencesViewController: PreferencesViewController {
     }
     
     func refreshCustomButtons() {
-        let isApplyToToolbar = DefaultsManager.shared.isCustomMenuApplyToToolbar
-        applyToToolbarButton.state = isApplyToToolbar ? .on : .off
-
-        let isApplyToContext = DefaultsManager.shared.isCustomMenuApplyToContext
-        applyToContextButton.state = isApplyToContext ? .on : .off
-        
+        toolbarMenuTargetButton.state = customMenuTarget == .toolbar ? .on : .off
+        contextMenuTargetButton.state = customMenuTarget == .context ? .on : .off
         let isPathEscaped = DefaultsManager.shared.isPathEscaped
-        if isPathEscaped {
-            pathYesButton.state = .on
-            pathNoButton.state = .off
-        } else {
-            pathYesButton.state = .off
-            pathNoButton.state = .on
-        }
+        pathYesButton.state = isPathEscaped ? .on : .off
+        pathNoButton.state = isPathEscaped ? .off : .on
+    }
+
+    func selectMenuTarget(_ target: CustomMenuTarget) {
+        customMenuTarget = target
+        refreshCustomButtons()
+        customMenuActions = DefaultsManager.shared.menuActions(for: target)
     }
     
     func offIconTypeButtons() {
@@ -245,6 +240,12 @@ class CustomPreferencesViewController: PreferencesViewController {
                                                 keyEquivalent: "")
         manuallyInputMenuItem.target = self
         addOptionMenu.addItem(manuallyInputMenuItem)
+        addOptionMenu.addItem(.separator())
+        let cliScriptItem = NSMenuItem(title: "Add CLI Script…",
+                                       action: #selector(addCLIScript),
+                                       keyEquivalent: "")
+        cliScriptItem.target = self
+        addOptionMenu.addItem(cliScriptItem)
         
     }
     
@@ -277,58 +278,99 @@ class CustomPreferencesViewController: PreferencesViewController {
     }
     
     @objc func selectSupportedApp(_ sender: NSMenuItem) {
-        let selectedAppName = sender.title
-        SupportedApps.allCases.forEach {
-            if $0.name == selectedAppName {
-                customMenuOptions.append($0.app)
-            }
-        }
+        guard let app = SupportedApps.from(name: sender.title) else { return }
+        customMenuActions.append(CustomMenuAction(application: app.app))
     }
-    
+
     @objc func selectRunningApp(_ sender: NSMenuItem) {
-        let selectedAppName = sender.title
-        runningApps.forEach {
-            if $0.name == selectedAppName {
-                showCustomInputViewController($0.name)
-            }
-        }
+        guard let app = runningApps.first(where: { $0.name == sender.title }) else { return }
+        showCustomInputViewController(app.name)
     }
-    
+
     @objc func selectManuallySelect(_ sender: NSMenuItem) {
         openFileSelectPanel()
     }
-    
+
     @objc func selectManuallyInput(_ sender: NSMenuItem) {
         showCustomInputViewController()
     }
-    
+
     func addCustomApp(_ app: App) {
-        customMenuOptions.append(app)
-        // TODO: generate script
+        customMenuActions.append(CustomMenuAction(application: app))
+    }
+
+    @objc func addCLIScript() {
+        let openPanel = NSOpenPanel()
+        openPanel.directoryURL = FileManager.default.homeDirectoryForCurrentUser
+        openPanel.canChooseDirectories = false
+        openPanel.canChooseFiles = true
+        openPanel.allowsMultipleSelection = false
+        openPanel.beginSheetModal(for: view.window!) { response in
+            guard response == .OK, let scriptURL = openPanel.url else { return }
+            guard FileManager.default.isExecutableFile(atPath: scriptURL.path) else {
+                let alert = NSAlert()
+                alert.messageText = "The script must be executable"
+                alert.informativeText = "Run chmod +x on the script, then add it again."
+                alert.alertStyle = .warning
+                alert.runModal()
+                return
+            }
+            self.promptForCLIScript(at: scriptURL)
+        }
+    }
+
+    private func promptForCLIScript(at scriptURL: URL) {
+        let alert = NSAlert()
+        alert.messageText = "Add CLI Script"
+        alert.informativeText = "Runs in the preferred Terminal, iTerm, Alacritty, kitty, WezTerm, or Ghostty. Enter one optional argument per line; spaces within a line are preserved."
+        alert.addButton(withTitle: "Add")
+        alert.addButton(withTitle: "Cancel")
+
+        let nameField = NSTextField(string: scriptURL.deletingPathExtension().lastPathComponent)
+        let argumentsView = NSTextView(frame: NSRect(x: 0, y: 0, width: 320, height: 72))
+        argumentsView.isRichText = false
+        let argumentsScrollView = NSScrollView(frame: argumentsView.frame)
+        argumentsScrollView.hasVerticalScroller = true
+        argumentsScrollView.borderType = .bezelBorder
+        argumentsScrollView.documentView = argumentsView
+
+        let stack = NSStackView(views: [
+            NSTextField(labelWithString: "Menu title"),
+            nameField,
+            NSTextField(labelWithString: "Arguments (one per line)"),
+            argumentsScrollView
+        ])
+        stack.orientation = .vertical
+        stack.alignment = .leading
+        stack.spacing = 6
+        stack.frame = NSRect(x: 0, y: 0, width: 320, height: 156)
+        nameField.widthAnchor.constraint(equalToConstant: 320).isActive = true
+        argumentsScrollView.widthAnchor.constraint(equalToConstant: 320).isActive = true
+        alert.accessoryView = stack
+
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+        let name = nameField.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !name.isEmpty else { return }
+        let arguments = argumentsView.string
+            .components(separatedBy: .newlines)
+            .filter { !$0.isEmpty }
+        customMenuActions.append(CustomMenuAction(cliScript: name,
+                                                   path: scriptURL.path,
+                                                   arguments: arguments))
     }
     
     @IBAction func removeMenuOptionButtonClicked(_ sender: NSButton) {
         let row = customMenuTableView.selectedRow
-        guard row >= 0 else { return }
+        guard customMenuActions.indices.contains(row) else { return }
+        customMenuActions.remove(at: row)
+    }
 
-        if let view = customMenuTableView.view(atColumn: 0, row: row, makeIfNecessary: false) as? NSTableCellView {
-            let appName = view.textField?.stringValue ?? ""
-            for customApp in customMenuOptions {
-                if customApp.name == appName {
-                    customMenuOptions.remove(element: customApp)
-                }
-            }
-        }
+    @IBAction func selectToolbarMenuClicked(_ sender: NSButton) {
+        selectMenuTarget(.toolbar)
     }
-    
-    @IBAction func applyToToolbarButtonClicked(_ sender: NSButton) {
-        let isApplyTo = applyToToolbarButton.state == .on
-        DefaultsManager.shared.isCustomMenuApplyToToolbar = isApplyTo
-    }
-    
-    @IBAction func applyToContextButtonClicked(_ sender: NSButton) {
-        let isApplyTo = applyToContextButton.state == .on
-        DefaultsManager.shared.isCustomMenuApplyToContext = isApplyTo
+
+    @IBAction func selectContextMenuClicked(_ sender: NSButton) {
+        selectMenuTarget(.context)
     }
     
     func showCustomInputViewController(_ appName: String = "") {
@@ -364,7 +406,7 @@ extension CustomPreferencesViewController: NSTableViewDataSource {
 
     func numberOfRows(in tableView: NSTableView) -> Int {
         if tableView == customMenuTableView {
-            return customMenuOptions.count
+            return customMenuActions.count
         } else {
             return 0
         }
@@ -393,7 +435,7 @@ extension CustomPreferencesViewController: NSTableViewDataSource {
         var oldIndexOffset = 0
         var newIndexOffset = 0
         
-        customMenuOptions.move(with: IndexSet(oldIndexes), to: row)
+        customMenuActions.move(with: IndexSet(oldIndexes), to: row)
 
         // For simplicity, the code below uses `tableView.moveRowAtIndex` to move rows around directly.
         // You may want to move rows in your content array and then call `tableView.reloadData()` instead.
@@ -420,7 +462,10 @@ extension CustomPreferencesViewController: NSTableViewDelegate {
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         if let cell = tableView.makeView(withIdentifier: Constants.Id.CustomMenuCell, owner: nil) as? NSTableCellView {
-            cell.textField?.stringValue = customMenuOptions[row].name
+            let action = customMenuActions[row]
+            cell.textField?.stringValue = action.kind == .cliScript
+                ? "\(action.name) (CLI)"
+                : action.name
             return cell
         }
         return nil

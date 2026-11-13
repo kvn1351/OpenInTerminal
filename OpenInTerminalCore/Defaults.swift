@@ -34,7 +34,10 @@ private let legacyPreferenceKeys = [
     "GitkrakenCommand",
     "OIT_DefaultTerminalShortcut",
     "OIT_DefaultEditorShortcut",
-    "OIT_CopyPathShortcut"
+    "OIT_CopyPathShortcut",
+    "ToolbarMenuActions",
+    "ContextMenuActions",
+    "OIT_CustomMenuMigrationVersion",
 ]
 
 private struct DefaultsConfiguration {
@@ -216,6 +219,8 @@ public extension DefaultsKeys {
     static let customMenuOptions = DefaultsKey<Data>("CustomMenuOptions")
     static let customMenuApplyToToolbar = DefaultsKey<Bool>("CustomMenuApplyToToolbar")
     static let customMenuApplyToContext = DefaultsKey<Bool>("CustomMenuApplyToContext")
+    static let toolbarMenuActions = DefaultsKey<Data>("ToolbarMenuActions")
+    static let contextMenuActions = DefaultsKey<Data>("ContextMenuActions")
     static let customMenuIconOption = DefaultsKey<String>("CustomMenuIconOption")
     static let pathEscapeOption = DefaultsKey<Bool>("PathEscapeOption")
     static let kittyCommand = DefaultsKey<String>("KittyCommand")

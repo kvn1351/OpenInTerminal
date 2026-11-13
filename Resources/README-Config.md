@@ -85,6 +85,23 @@ For macOS 14 and earlier, ensure the Finder Extension is enabled via System Pref
 
 ## Custom Configuration
 
+
+### Custom Finder Actions
+
+The **Custom** preferences pane keeps independent ordered lists for the **Finder Toolbar Menu** and **Finder Context Menu**. Select a list, use **+** to add or **−** to remove entries, and drag rows to change their order. Changes affect only the selected list.
+
+To run a CLI script, make it executable (for example, `chmod +x ~/bin/my-script.sh`), choose **+ → Add CLI Script…**, select the script, and enter a menu title. Optional arguments are entered **one per line**; spaces within a line stay in that argument. The script runs with the Finder folder as its working directory in the preferred terminal. Direct CLI launch is supported for Terminal, iTerm, Alacritty, kitty, WezTerm, and Ghostty.
+
+On first use, macOS may ask permission for OpenInTerminal to control Terminal or iTerm. Allow it under **System Settings → Privacy & Security → Automation**; otherwise the terminal may not accept the command.
+
+Example script:
+
+```sh
+#!/bin/zsh
+printf 'folder: %s\n' "$PWD"
+printf 'arguments: %s\n' "$*"
+```
+
 ### For Neovim Users
 
 If you select Neovim as your editor in OpenInTerminal, the app will use Kitty as the default terminal. To switch to a different terminal (supported options: Alacritty, WezTerm, and Kitty), update the configuration with the following command. Replace `<Your Name>` with your username and adjust the Neovim path (`/opt/homebrew/bin/nvim` in this example) to match your installation:

@@ -16,6 +16,10 @@ public enum SharedConfig {
         Bundle.main.bundlePath.hasSuffix(".appex")
     }
 
+    private static var isHostApplication: Bool {
+        Bundle.main.bundleIdentifier == Constants.Id.MainApp
+    }
+
     private static let preferenceKeys = [
         DefaultsKeys.firstSetup._key,
         DefaultsKeys.launchAtLogin._key,
@@ -31,6 +35,8 @@ public enum SharedConfig {
         DefaultsKeys.customMenuOptions._key,
         DefaultsKeys.customMenuApplyToToolbar._key,
         DefaultsKeys.customMenuApplyToContext._key,
+        DefaultsKeys.toolbarMenuActions._key,
+        DefaultsKeys.contextMenuActions._key,
         DefaultsKeys.customMenuIconOption._key,
         DefaultsKeys.pathEscapeOption._key,
         DefaultsKeys.kittyCommand._key,
@@ -99,7 +105,7 @@ public enum SharedConfig {
 
     /// The host app is the only writer; the extension reads the published file.
     public static func set(_ value: Any?, forKey key: String) {
-        guard !isFinderExtension else { return }
+        guard isHostApplication else { return }
         var snapshot = values()
         if let value {
             snapshot[key] = value
@@ -112,7 +118,7 @@ public enum SharedConfig {
     /// Seed the host defaults from an existing mirror before first-run defaults
     /// are applied. Existing host values always win.
     public static func restoreMissingValues(to defaults: UserDefaults) {
-        guard !isFinderExtension else { return }
+        guard isHostApplication else { return }
         for (key, value) in values() where defaults.object(forKey: key) == nil {
             defaults.set(value, forKey: key)
         }
@@ -121,7 +127,7 @@ public enum SharedConfig {
     /// Import settings from older App Group stores, then let the active host
     /// defaults take precedence when the full snapshot is published.
     public static func migrateLegacySettings(to defaults: UserDefaults) {
-        guard !isFinderExtension else { return }
+        guard isHostApplication else { return }
         var snapshot = values()
         let legacyGroups = [Constants.Id.Group,
                             Constants.Id.PreviousGroup,
@@ -142,7 +148,7 @@ public enum SharedConfig {
     /// Publish current host values without deleting mirror entries the host
     /// cannot see (for example, values migrated from a previous App Group).
     public static func publish(from defaults: UserDefaults) {
-        guard !isFinderExtension else { return }
+        guard isHostApplication else { return }
         var snapshot = values()
         for key in preferenceKeys {
             if let value = defaults.object(forKey: key) {
@@ -153,7 +159,7 @@ public enum SharedConfig {
     }
 
     public static func removeAll() {
-        guard !isFinderExtension, let fileURL else { return }
+        guard isHostApplication, let fileURL else { return }
         try? FileManager.default.removeItem(at: fileURL)
     }
 

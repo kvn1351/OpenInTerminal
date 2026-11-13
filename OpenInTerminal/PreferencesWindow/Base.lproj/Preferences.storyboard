@@ -548,22 +548,22 @@
                                     </stackView>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jia-nD-S9J">
                                         <rect key="frame" x="20" y="128" width="201" height="16"/>
-                                        <buttonCell key="cell" type="check" title="Apply to Finder Toolbar Menu" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="2we-f7-s2N">
+                                        <buttonCell key="cell" type="radio" title="Edit Finder Toolbar Menu" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="2we-f7-s2N">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                         <connections>
-                                            <action selector="applyToToolbarButtonClicked:" target="s5W-qL-1Xs" id="P7k-7z-2dk"/>
+                                            <action selector="selectToolbarMenuClicked:" target="s5W-qL-1Xs" id="P7k-7z-2dk"/>
                                         </connections>
                                     </button>
-                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="teH-Uy-YOq" userLabel="Apply to Context Memu">
+                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="teH-Uy-YOq" userLabel="Context Menu Target">
                                         <rect key="frame" x="20" y="104" width="203" height="16"/>
-                                        <buttonCell key="cell" type="check" title="Apply to Finder Context Menu" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="RhP-R5-Wwt">
+                                        <buttonCell key="cell" type="radio" title="Edit Finder Context Menu" bezelStyle="regularSquare" imagePosition="left" state="off" inset="2" id="RhP-R5-Wwt">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                         <connections>
-                                            <action selector="applyToContextButtonClicked:" target="s5W-qL-1Xs" id="hiv-kz-pHw"/>
+                                            <action selector="selectContextMenuClicked:" target="s5W-qL-1Xs" id="hiv-kz-pHw"/>
                                         </connections>
                                     </button>
                                     <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4us-6x-3pQ">
@@ -719,8 +719,8 @@
                     </view>
                     <connections>
                         <outlet property="addMenuOptionButton" destination="krU-9a-aOM" id="Mha-o5-VDh"/>
-                        <outlet property="applyToContextButton" destination="teH-Uy-YOq" id="W1V-mC-hRa"/>
-                        <outlet property="applyToToolbarButton" destination="jia-nD-S9J" id="Rfo-00-9Ss"/>
+                        <outlet property="contextMenuTargetButton" destination="teH-Uy-YOq" id="W1V-mC-hRa"/>
+                        <outlet property="toolbarMenuTargetButton" destination="jia-nD-S9J" id="Rfo-00-9Ss"/>
                         <outlet property="customMenuTableView" destination="zAU-AM-qPB" id="TAv-cq-hfF"/>
                         <outlet property="iTermTabButton" destination="Lmz-5e-p2j" id="Vr0-XJ-pnx"/>
                         <outlet property="iTermTextField" destination="wVI-dH-WOK" id="oeJ-Rq-h9e"/>

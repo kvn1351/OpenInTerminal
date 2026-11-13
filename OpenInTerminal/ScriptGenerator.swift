@@ -41,6 +41,14 @@ func checkScripts() throws {
         .appendingPathExtension("scpt")
     let generalScript = ScriptManager.shared.getGeneralScript()
     try writeScriptIfNeeded(at: generalScriptPath, with: generalScript)
+
+    for mode in ["terminal", "iterm", "open"] {
+        let cliScriptPath = finderExScriptPath
+            .appendingPathComponent(ScriptManager.shared.getCLICommandScriptName(mode: mode))
+            .appendingPathExtension("scpt")
+        let cliScript = ScriptManager.shared.getCLICommandAppleScript(mode: mode)
+        try writeScriptIfNeeded(at: cliScriptPath, with: cliScript)
+    }
     
     // write terminal new tab script
     let tabScriptName = ScriptManager.shared.getTerminalNewTabScriptName()

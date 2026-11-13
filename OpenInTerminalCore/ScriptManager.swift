@@ -81,6 +81,62 @@ public class ScriptManager {
         let command = "cd \(path.terminalPathEscaped())"
         return command
     }
+
+    public func getCLICommandScriptName(mode: String) -> String {
+        switch mode {
+        case "terminal": return Constants.cliCommandTerminalScript
+        case "iterm": return Constants.cliCommandItermScript
+        default: return Constants.cliCommandOpenScript
+        }
+    }
+
+    /// Each terminal-specific script has its own compiled command dictionary;
+    /// the generic open script avoids requiring an installed terminal's AppleScript dictionary.
+    public func getCLICommandAppleScript(mode: String) -> String {
+        switch mode {
+        case "terminal":
+            return """
+            on runCLIAction(argv)
+                set workingDirectory to item 2 of argv as text
+                set scriptPath to item 3 of argv as text
+                set commandText to "cd -- " & quoted form of workingDirectory & " && " & quoted form of scriptPath
+                repeat with index from 4 to (count of argv)
+                    set commandText to commandText & " " & quoted form of ((item index of argv) as text)
+                end repeat
+                tell application "Terminal"
+                    activate
+                    do script commandText
+                end tell
+            end runCLIAction
+            """
+        case "iterm":
+            return """
+            on runCLIAction(argv)
+                set workingDirectory to item 2 of argv as text
+                set scriptPath to item 3 of argv as text
+                set shellCommand to "cd -- " & quoted form of workingDirectory & " && " & quoted form of scriptPath
+                repeat with index from 4 to (count of argv)
+                    set shellCommand to shellCommand & " " & quoted form of ((item index of argv) as text)
+                end repeat
+                set commandText to "/bin/zsh -l -c " & quoted form of (shellCommand & "; exec /bin/zsh -l")
+                tell application id "com.googlecode.iterm2"
+                    activate
+                    create window with default profile command commandText
+                end tell
+            end runCLIAction
+            """
+        default:
+            return """
+            on runCLIAction(argv)
+                set commandText to quoted form of "/usr/bin/open"
+                repeat with index from 2 to (count of argv)
+                    set commandText to commandText & " " & quoted form of ((item index of argv) as text)
+                end repeat
+                do shell script commandText
+            end runCLIAction
+            """
+        }
+    }
     
     /// Open path in a new tab of Terminal
     public func getTerminalNewTabAppleScript(url: URL) -> String {
@@ -144,6 +200,10 @@ public class ScriptManager {
         event.setDescriptor(NSAppleEventDescriptor(string: functionName), forKeyword: AEKeyword(keyASSubroutineName))
         event.setDescriptor(parameters, forKeyword: AEKeyword(keyDirectObject))
         return event
+    }
+
+    public func getCLICommandScriptEvent(arguments: [String]) -> NSAppleEventDescriptor {
+        getScriptEvent(functionName: "runCLIAction", arguments: arguments)
     }
     
     

@@ -149,3 +149,85 @@ extension App: Openable {
     
 }
 
+public enum CustomMenuTarget: String, Codable {
+    case toolbar
+    case context
+}
+
+public struct CustomMenuAction: Codable, Equatable, Identifiable {
+    public enum Kind: String, Codable {
+        case application
+        case cliScript
+    }
+
+    public let id: UUID
+    public let kind: Kind
+    public var name: String
+    public var application: App?
+    public var scriptPath: String?
+    public var arguments: [String]
+
+    public init(application: App) {
+        id = UUID()
+        kind = .application
+        name = application.name
+        self.application = application
+        scriptPath = nil
+        arguments = []
+    }
+
+    public init(cliScript name: String, path: String, arguments: [String]) {
+        id = UUID()
+        kind = .cliScript
+        self.name = name
+        application = nil
+        scriptPath = path
+        self.arguments = arguments
+    }
+}
+
+public enum TerminalCommandLaunchError: LocalizedError {
+    case unsupportedTerminal(String)
+
+    public var errorDescription: String? {
+        switch self {
+        case .unsupportedTerminal(let name):
+            return "\(name) does not expose a supported command-launch interface."
+        }
+    }
+}
+
+/// Builds a shell-safe AppleScript argument vector for running a script in the
+/// configured terminal. Paths and optional arguments remain separate values
+/// until the trusted AppleScript quotes each one for the terminal shell.
+public enum TerminalCommandLauncher {
+    public static func arguments(terminal: App,
+                                 scriptPath: String,
+                                 workingDirectory: String,
+                                 scriptArguments: [String]) throws -> [String] {
+        guard let app = SupportedApps.from(name: terminal.name), app.type == .terminal else {
+            throw TerminalCommandLaunchError.unsupportedTerminal(terminal.name)
+        }
+
+        switch app {
+        case .terminal, .iTerm:
+            return [app == .terminal ? "terminal" : "iterm",
+                    workingDirectory, scriptPath] + scriptArguments
+        case .alacritty:
+            return ["open", "-a", app.name, "--args",
+                    "--working-directory", workingDirectory, "-e", scriptPath] + scriptArguments
+        case .kitty:
+            return ["open", "-a", app.name, "--args",
+                    "--directory", workingDirectory, scriptPath] + scriptArguments
+        case .wezterm:
+            return ["open", "-a", app.name, "--args",
+                    "start", "--cwd", workingDirectory, "--", scriptPath] + scriptArguments
+        case .ghostty:
+            return ["open", "-a", app.name, "--args",
+                    "--working-directory", workingDirectory, "-e", scriptPath] + scriptArguments
+        default:
+            throw TerminalCommandLaunchError.unsupportedTerminal(app.name)
+        }
+    }
+}
+

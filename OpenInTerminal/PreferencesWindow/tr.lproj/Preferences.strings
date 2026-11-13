@@ -6,7 +6,7 @@
 "2Rg-te-FPU.title" = "⚠️ Bu bütün kullanıcı tercihlerini sıfırlayacaktır";
 
 /* Class = "NSButtonCell"; title = "Apply to Finder Toolbar Menu"; ObjectID = "2we-f7-s2N"; */
-"2we-f7-s2N.title" = "Finder Araç Menüsüne uygula";
+ "2we-f7-s2N.title" = "Finder araç çubuğu menüsünü düzenle";
 
 /* Class = "NSTextFieldCell"; title = "If enabled, click the Menu Bar icon to toggle the action you choose. Right click to open the menu."; ObjectID = "592-4p-Ybh"; */
 "592-4p-Ybh.title" = "Eğer etkinleştirilirse Menu Çubuğundaki simge üzerinden yapılması istenen aksiyon seçilir. Menüyü açmak için sağ tıklayın";
@@ -72,7 +72,7 @@
 "NZE-zU-6ss.title" = "🐦 Twitter:";
 
 /* Class = "NSButtonCell"; title = "Apply to Finder Context Menu"; ObjectID = "RhP-R5-Wwt"; */
-"RhP-R5-Wwt.title" = "Finder İçerik Menüsüne Uygula";
+ "RhP-R5-Wwt.title" = "Finder bağlam menüsünü düzenle";
 
 /* Class = "NSButtonCell"; title = "Alipay"; ObjectID = "Sw7-of-ecf"; */
 "Sw7-of-ecf.title" = "Alipay";

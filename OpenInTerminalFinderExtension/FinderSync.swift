@@ -53,42 +53,27 @@ class FinderSync: FIFinderSync {
     }
     
     override func menu(for menuKind: FIMenuKind) -> NSMenu {
-        var menu = NSMenu(title: "")
-        
         switch menuKind {
-
         case .contextualMenuForContainer,
              .contextualMenuForSidebar,
              .contextualMenuForItems:
-            let isHideContextMenuItems = DefaultsManager.shared.isHideContextMenuItems
-            guard !isHideContextMenuItems else { return NSMenu() }
-
-            // the submenu grouping only applies to the Finder context menu
-            let useSubmenu = DefaultsManager.shared.isContextMenuUseSubmenu
-
-            // show custom menu or default
-            let isCustomMenuApplyToContext = DefaultsManager.shared.isCustomMenuApplyToContext
-            if isCustomMenuApplyToContext {
-                menu = createCustomMenu(useSubmenu: useSubmenu)
-            } else {
-                menu = createDefaultMenu(useSubmenu: useSubmenu)
+            guard !DefaultsManager.shared.isHideContextMenuItems else { return NSMenu() }
+            let actions = DefaultsManager.shared.contextMenuActions
+            guard !actions.isEmpty else {
+                return createDefaultMenu(useSubmenu: DefaultsManager.shared.isContextMenuUseSubmenu)
             }
+            return createCustomMenu(actions: actions,
+                                    useSubmenu: DefaultsManager.shared.isContextMenuUseSubmenu)
 
         case .toolbarItemMenu:
-            // the toolbar menu never groups items into a submenu
-            let isCustomMenuApplyToToolbar = DefaultsManager.shared.isCustomMenuApplyToToolbar
-            if isCustomMenuApplyToToolbar {
-                menu = createCustomMenu(useSubmenu: false)
-            } else {
-                menu = createDefaultMenu(useSubmenu: false)
-            }
+            let actions = DefaultsManager.shared.toolbarMenuActions
+            guard !actions.isEmpty else { return createDefaultMenu(useSubmenu: false) }
+            let menu = createCustomMenu(actions: actions, useSubmenu: false)
+            return menu.items.isEmpty ? createDefaultMenu(useSubmenu: false) : menu
+
         default:
-            break
+            return NSMenu(title: "")
         }
-        if menuKind == .toolbarItemMenu && menu.items.isEmpty {
-            menu = createDefaultMenu(useSubmenu: false)
-        }
-        return menu
     }
     
     var scriptPath: URL? {
@@ -164,36 +149,25 @@ class FinderSync: FIFinderSync {
         return menu
     }
 
-    func createCustomMenu(useSubmenu: Bool) -> NSMenu {
+    func createCustomMenu(actions: [CustomMenuAction], useSubmenu: Bool) -> NSMenu {
         let menu = NSMenu(title: "")
-
-        // get saved custom apps
-        guard let customApps = DefaultsManager.shared.customMenuOptions else {
-            return menu
-        }
-
-        // when submenu grouping is enabled, add the items into a separate
-        // menu that will be attached under a single top level item
         let itemsMenu = useSubmenu ? NSMenu(title: "") : menu
 
-        customApps.forEach { app in
-            let itemTitle = app.name
-            let menuItem = NSMenuItem(title: itemTitle,
+        for action in actions {
+            let menuItem = NSMenuItem(title: action.name,
                                       action: #selector(customMenuItemClicked),
                                       keyEquivalent: "")
-            let appIcon = DefaultsManager.shared.getAppIcon(app)
-            menuItem.image = appIcon
+            menuItem.representedObject = action.id.uuidString
+            if let app = action.application {
+                menuItem.image = DefaultsManager.shared.getAppIcon(app)
+            }
             itemsMenu.addItem(menuItem)
         }
 
-        // add "Copy Path"
-        itemsMenu.addItem(self.copyPathItem)
-
-        // attach the items menu under a single top level item when needed
+        itemsMenu.addItem(copyPathItem)
         if useSubmenu {
             menu.addItem(makeSubmenuItem(with: itemsMenu))
         }
-
         return menu
     }
 
@@ -275,14 +249,66 @@ class FinderSync: FIFinderSync {
     }
     
     @objc func customMenuItemClicked(_ sender: NSMenuItem) {
-        guard let customApps = DefaultsManager.shared.customMenuOptions else { return }
-        let appName = sender.title
-        for app in customApps {
-            if app.name == appName {
-                open(app)
-                break
-            }
+        guard let idString = sender.representedObject as? String,
+              let id = UUID(uuidString: idString),
+              let action = DefaultsManager.shared.menuAction(withID: id) else { return }
+
+        switch action.kind {
+        case .application:
+            guard let app = action.application else { return }
+            open(app)
+        case .cliScript:
+            runCLIScript(action)
         }
+    }
+
+    private func runCLIScript(_ action: CustomMenuAction) {
+        guard let scriptPath = action.scriptPath,
+              FileManager.default.isExecutableFile(atPath: scriptPath) else {
+            reportCLIError("The script for “\(action.name)” is missing or not executable.")
+            return
+        }
+        guard let selectedURL = getSelectedPathsFromFinder().first else {
+            reportCLIError("Finder did not provide a current folder for “\(action.name)”.")
+            return
+        }
+
+        var isDirectory: ObjCBool = false
+        FileManager.default.fileExists(atPath: selectedURL.path, isDirectory: &isDirectory)
+        let directoryURL = isDirectory.boolValue ? selectedURL : selectedURL.deletingLastPathComponent()
+        let terminal = DefaultsManager.shared.defaultTerminal ?? SupportedApps.terminal.app
+
+        do {
+            let arguments = try TerminalCommandLauncher.arguments(
+                terminal: terminal,
+                scriptPath: scriptPath,
+                workingDirectory: directoryURL.path,
+                scriptArguments: action.arguments
+            )
+            guard let mode = arguments.first,
+                  let scriptURL = fileScriptPath(fileName: ScriptManager.shared.getCLICommandScriptName(mode: mode)),
+                  FileManager.default.fileExists(atPath: scriptURL.path) else {
+                reportCLIError("The CLI script runner is missing. Restart OpenInTerminal and try again.")
+                return
+            }
+            let script = try NSUserAppleScriptTask(url: scriptURL)
+            let event = ScriptManager.shared.getCLICommandScriptEvent(arguments: arguments)
+            script.execute(withAppleEvent: event) { _, error in
+                if let error {
+                    self.reportCLIError("Could not run “\(action.name)”: \(error.localizedDescription)")
+                }
+            }
+        } catch {
+            reportCLIError("Could not run “\(action.name)” in \(terminal.name): \(error.localizedDescription)")
+        }
+    }
+
+    private func reportCLIError(_ message: String) {
+        logw(message)
+        let notification = NSUserNotification()
+        notification.title = "OpenInTerminal CLI Action"
+        notification.informativeText = message
+        NSUserNotificationCenter.default.deliver(notification)
     }
     
     @objc func copyPathToClipboard() {

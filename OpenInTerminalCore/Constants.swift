@@ -29,6 +29,9 @@ struct Constants {
     static let generalScript = "generalScript"
     /// AppleScript for opening a new tab in Terminal
     static let terminalNewTabScript = "terminalNewTabScript"
+    static let cliCommandTerminalScript = "cliCommandTerminal"
+    static let cliCommandItermScript = "cliCommandIterm"
+    static let cliCommandOpenScript = "cliCommandOpen"
     
     struct Commands {
         static let alacritty = "open -na Alacritty --args --working-directory"
