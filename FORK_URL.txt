@@ -1,0 +1,3 @@
+https://github.com/kvn1351/OpenInTerminal
+Source baseline: https://github.com/chillednems/OpenInTerminal/tree/agent/fix-macos-27-preferences-hotkeys
+Upstream: https://github.com/Ji4n1ng/OpenInTerminal

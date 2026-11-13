@@ -58,8 +58,8 @@ class FinderSync: FIFinderSync {
         switch menuKind {
 
         case .contextualMenuForContainer,
+             .contextualMenuForSidebar,
              .contextualMenuForItems:
-            // need to hide or not
             let isHideContextMenuItems = DefaultsManager.shared.isHideContextMenuItems
             guard !isHideContextMenuItems else { return NSMenu() }
 
@@ -82,11 +82,12 @@ class FinderSync: FIFinderSync {
             } else {
                 menu = createDefaultMenu(useSubmenu: false)
             }
-            
         default:
             break
         }
-        
+        if menuKind == .toolbarItemMenu && menu.items.isEmpty {
+            menu = createDefaultMenu(useSubmenu: false)
+        }
         return menu
     }
     

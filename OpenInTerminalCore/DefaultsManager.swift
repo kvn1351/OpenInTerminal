@@ -380,6 +380,6 @@ public class DefaultsManager {
     public func removeAllUserDefaults() {
         logw("Remove all UserDefaults")
         removeAllDefaults()
+        SharedConfig.removeAll()
     }
-    
 }

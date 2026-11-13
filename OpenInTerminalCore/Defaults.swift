@@ -228,49 +228,91 @@ public extension DefaultsKeys {
     static let liteDefaultEditor = DefaultsKey<String>("LiteDefaultEditor")
 }
 
+private func sharedValue<Value>(forKey key: String,
+                                fallback: () -> Value) -> Value {
+    if SharedConfig.isFinderExtension,
+       let value = SharedConfig.value(forKey: key) as? Value {
+        return value
+    }
+    return fallback()
+}
+
 public extension UserDefaults {
     subscript(key: DefaultsKey<String>) -> String? {
-        get { return string(forKey: key._key) }
-        set { set(newValue, forKey: key._key) }
+        get { sharedValue(forKey: key._key) { string(forKey: key._key) } }
+        set {
+            SharedConfig.set(newValue, forKey: key._key)
+            set(newValue, forKey: key._key)
+        }
     }
     subscript(key: DefaultsKey<Bool>) -> Bool {
-        get { return bool(forKey: key._key) }
-        set { set(newValue, forKey: key._key) }
+        get { sharedValue(forKey: key._key) { bool(forKey: key._key) } }
+        set {
+            SharedConfig.set(newValue, forKey: key._key)
+            set(newValue, forKey: key._key)
+        }
     }
     subscript(key: DefaultsKey<Int>) -> Int {
-        get { return integer(forKey: key._key) }
-        set { set(newValue, forKey: key._key) }
+        get { sharedValue(forKey: key._key) { integer(forKey: key._key) } }
+        set {
+            SharedConfig.set(newValue, forKey: key._key)
+            set(newValue, forKey: key._key)
+        }
     }
     subscript(key: DefaultsKey<Float>) -> Float {
-        get { return float(forKey: key._key) }
-        set { set(newValue, forKey: key._key) }
+        get { sharedValue(forKey: key._key) { float(forKey: key._key) } }
+        set {
+            SharedConfig.set(newValue, forKey: key._key)
+            set(newValue, forKey: key._key)
+        }
     }
     subscript(key: DefaultsKey<Double>) -> Double {
-        get { return double(forKey: key._key) }
-        set { set(newValue, forKey: key._key) }
+        get { sharedValue(forKey: key._key) { double(forKey: key._key) } }
+        set {
+            SharedConfig.set(newValue, forKey: key._key)
+            set(newValue, forKey: key._key)
+        }
     }
     subscript(key: DefaultsKey<URL>) -> URL? {
-        get { return url(forKey: key._key) }
-        set { set(newValue, forKey: key._key) }
+        get { sharedValue(forKey: key._key) { url(forKey: key._key) } }
+        set {
+            SharedConfig.set(newValue, forKey: key._key)
+            set(newValue, forKey: key._key)
+        }
     }
     subscript(key: DefaultsKey<Any>) -> Any? {
-        get { return value(forKey: key._key) }
-        set { set(newValue, forKey: key._key) }
+        get { sharedValue(forKey: key._key) { value(forKey: key._key) } }
+        set {
+            SharedConfig.set(newValue, forKey: key._key)
+            set(newValue, forKey: key._key)
+        }
     }
     subscript(key: DefaultsKey<[Any]>) -> [Any]? {
-        get { return array(forKey: key._key) }
-        set { set(newValue, forKey: key._key) }
+        get { sharedValue(forKey: key._key) { array(forKey: key._key) } }
+        set {
+            SharedConfig.set(newValue, forKey: key._key)
+            set(newValue, forKey: key._key)
+        }
     }
     subscript(key: DefaultsKey<Data>) -> Data? {
-        get { return data(forKey: key._key) }
-        set { set(newValue, forKey: key._key) }
+        get { sharedValue(forKey: key._key) { data(forKey: key._key) } }
+        set {
+            SharedConfig.set(newValue, forKey: key._key)
+            set(newValue, forKey: key._key)
+        }
     }
     subscript(key: DefaultsKey<[String : Any]>) -> [String : Any]? {
-        get { return dictionary(forKey: key._key) }
-        set { set(newValue, forKey: key._key) }
+        get { sharedValue(forKey: key._key) { dictionary(forKey: key._key) } }
+        set {
+            SharedConfig.set(newValue, forKey: key._key)
+            set(newValue, forKey: key._key)
+        }
     }
     subscript(key: DefaultsKey<[String]>) -> [String]? {
-        get { return stringArray(forKey: key._key) }
-        set { set(newValue, forKey: key._key) }
+        get { sharedValue(forKey: key._key) { stringArray(forKey: key._key) } }
+        set {
+            SharedConfig.set(newValue, forKey: key._key)
+            set(newValue, forKey: key._key)
+        }
     }
 }

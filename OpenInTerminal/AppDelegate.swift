@@ -27,7 +27,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Lifecycle
     
     func applicationDidFinishLaunching(_ notification: Notification) {
+        SharedConfig.migrateLegacySettings(to: Defaults)
+        SharedConfig.restoreMissingValues(to: Defaults)
         DefaultsManager.shared.firstSetup()
+        SharedConfig.publish(from: Defaults)
         LaunchAtLoginManager.reconcileSavedPreference()
         addObserver()
         terminateOpenInTerminalHelper()

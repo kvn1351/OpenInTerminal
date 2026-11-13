@@ -3,6 +3,12 @@
   <a href="./README.md">English</a> | <a href="./Resources/README-zh.md">中文</a> | <a href="./Resources/README-tr.md">Türkçe</a> | <a href="./Resources/README-de.md">Deutsch</a>
 </div>
 
+## Why this fork exists
+
+OpenInTerminal 2.3.9 has reported compatibility failures on macOS 26/27: Finder's toolbar menu may not open, and preference changes may not persist ([upstream issue #269](https://github.com/Ji4n1ng/OpenInTerminal/issues/269), opened June 29, 2026). As of November 13, 2026, the related fixes in [PR #281](https://github.com/Ji4n1ng/OpenInTerminal/pull/281), [#285](https://github.com/Ji4n1ng/OpenInTerminal/pull/285), [#286](https://github.com/Ji4n1ng/OpenInTerminal/pull/286), and [#291](https://github.com/Ji4n1ng/OpenInTerminal/pull/291) remained open and unmerged. The maintainer has not shipped these fixes upstream for several months, so this fork carries a local fix rather than waiting for an upstream release.
+
+This is an independent, unofficial fork; it is not endorsed by the upstream maintainer. It uses a file-based settings bridge so the Finder extension can read preferences in ad-hoc local builds.
+
 ## How to use 🚀
 
 | Core Features | OpenInTerminal |
