@@ -226,10 +226,6 @@ public class DefaultsManager {
         }
     }
 
-    public func menuAction(withID id: UUID) -> CustomMenuAction? {
-        (toolbarMenuActions + contextMenuActions).first { $0.id == id }
-    }
-
     /// One-time conversion from the former shared custom-app array. Preserve
     /// each old menu's enabled state and item order.
     public func migrateLegacyCustomMenuActionsIfNeeded() {

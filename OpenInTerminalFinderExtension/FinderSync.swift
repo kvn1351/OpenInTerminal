@@ -12,6 +12,8 @@ import OpenInTerminalCore
 import Carbon
 
 class FinderSync: FIFinderSync {
+    private var menuActionsByTag: [Int: CustomMenuAction] = [:]
+
     
     override init() {
         super.init()
@@ -92,6 +94,7 @@ class FinderSync: FIFinderSync {
                                                                    comment: "Copy path to Clipboard"),
                                                 action: #selector(copyPathToClipboard),
                                                 keyEquivalent: "")
+            copyPathItem.target = self
             if DefaultsManager.shared.customMenuIconOption == .simple {
                 let copyPathIcon = NSImage(named: "context_menu_icon_path")
                 copyPathItem.image = copyPathIcon
@@ -125,6 +128,7 @@ class FinderSync: FIFinderSync {
         let openInTerminalItem = NSMenuItem(title: terminalTitle,
                                             action: #selector(openDefaultTerminal),
                                             keyEquivalent: "")
+        openInTerminalItem.target = self
         let terminalIcon = DefaultsManager.shared.getAppIcon(terminal)
         openInTerminalItem.image = terminalIcon
         itemsMenu.addItem(openInTerminalItem)
@@ -134,6 +138,7 @@ class FinderSync: FIFinderSync {
         let openInEditorItem = NSMenuItem(title: editorTitle,
                                             action: #selector(openDefaultEditor),
                                             keyEquivalent: "")
+        openInEditorItem.target = self
         let editorIcon = DefaultsManager.shared.getAppIcon(editor)
         openInEditorItem.image = editorIcon
         itemsMenu.addItem(openInEditorItem)
@@ -152,12 +157,16 @@ class FinderSync: FIFinderSync {
     func createCustomMenu(actions: [CustomMenuAction], useSubmenu: Bool) -> NSMenu {
         let menu = NSMenu(title: "")
         let itemsMenu = useSubmenu ? NSMenu(title: "") : menu
+        menuActionsByTag.removeAll(keepingCapacity: true)
 
-        for action in actions {
+        for (index, action) in actions.enumerated() {
             let menuItem = NSMenuItem(title: action.name,
                                       action: #selector(customMenuItemClicked),
                                       keyEquivalent: "")
-            menuItem.representedObject = action.id.uuidString
+            menuItem.target = self
+            // Finder transports tags, but drops representedObject across XPC.
+            menuItem.tag = index + 1
+            menuActionsByTag[menuItem.tag] = action
             if let app = action.application {
                 menuItem.image = DefaultsManager.shared.getAppIcon(app)
             }
@@ -249,9 +258,7 @@ class FinderSync: FIFinderSync {
     }
     
     @objc func customMenuItemClicked(_ sender: NSMenuItem) {
-        guard let idString = sender.representedObject as? String,
-              let id = UUID(uuidString: idString),
-              let action = DefaultsManager.shared.menuAction(withID: id) else { return }
+        guard let action = menuActionsByTag[sender.tag] else { return }
 
         switch action.kind {
         case .application:
@@ -263,9 +270,10 @@ class FinderSync: FIFinderSync {
     }
 
     private func runCLIScript(_ action: CustomMenuAction) {
-        guard let scriptPath = action.scriptPath,
-              FileManager.default.isExecutableFile(atPath: scriptPath) else {
-            reportCLIError("The script for “\(action.name)” is missing or not executable.")
+        // The extension cannot inspect arbitrary executables outside its sandbox.
+        // The picker validates the file; the terminal shell performs execution.
+        guard let scriptPath = action.scriptPath else {
+            reportCLIError("No executable is configured for “\(action.name)”.")
             return
         }
         guard let selectedURL = getSelectedPathsFromFinder().first else {

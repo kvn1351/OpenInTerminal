@@ -39,7 +39,6 @@ manager.migrateLegacyCustomMenuActionsIfNeeded()
 precondition(manager.toolbarMenuActions.map(\.name) == ["Run Checks", "Ghostty", "Zed"])
 precondition(manager.contextMenuActions.map(\.name) == ["TextEdit"])
 precondition(manager.toolbarMenuActions[0].arguments == ["--mode", "value with spaces"])
-precondition(manager.menuAction(withID: scriptAction.id)?.scriptPath == "/tmp/run checks.sh")
 
 let cwd = "/Users/test/Project Space"
 let script = "/Users/test/bin/run checks.sh"
