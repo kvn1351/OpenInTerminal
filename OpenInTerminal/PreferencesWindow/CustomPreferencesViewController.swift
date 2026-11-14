@@ -346,6 +346,7 @@ class CustomPreferencesViewController: PreferencesViewController {
         stack.frame = NSRect(x: 0, y: 0, width: 320, height: 156)
         nameField.widthAnchor.constraint(equalToConstant: 320).isActive = true
         argumentsScrollView.widthAnchor.constraint(equalToConstant: 320).isActive = true
+        argumentsScrollView.heightAnchor.constraint(equalToConstant: 72).isActive = true
         alert.accessoryView = stack
 
         guard alert.runModal() == .alertFirstButtonReturn else { return }

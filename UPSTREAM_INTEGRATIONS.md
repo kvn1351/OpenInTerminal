@@ -35,7 +35,7 @@ This file records upstream changes manually adapted into this checkout. “Adapt
 - Store separate ordered CLI/application action lists for Finder toolbar and context menus, migrating the prior shared list according to its old per-menu enable flags.
 - Add executable CLI-script actions with optional per-line arguments; launch in the currently selected preferred terminal where a direct command-launch adapter exists.
 - Fix Finder action dispatch using `NSMenuItem.tag` and a menu-local action snapshot: Finder's XPC menu transport drops `representedObject`, so UUID lookup there silently discarded every custom application/CLI click.
-- Keep custom-menu migration one-time so restarts preserve CLI entries.
+- Keep custom-menu migration one-time so restarts preserve CLI entries, and explicitly size the CLI arguments editor.
 - Do not inspect the CLI executable from the Finder extension sandbox: a binary selected in the host picker can be inaccessible there. Pass its path to the out-of-sandbox script/terminal, which executes it with the user's access.
 
 ## Reviewed, not adapted
