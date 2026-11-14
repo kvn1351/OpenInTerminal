@@ -34,6 +34,7 @@ This file records upstream changes manually adapted into this checkout. “Adapt
 - **Source:** User request, November 13, 2026.
 - Store separate ordered CLI/application action lists for Finder toolbar and context menus, migrating the prior shared list according to its old per-menu enable flags.
 - Add executable CLI-script actions with optional per-line arguments; launch in the currently selected preferred terminal where a direct command-launch adapter exists.
+- Keep custom-menu migration one-time so restarts preserve CLI entries.
 
 ## Reviewed, not adapted
 

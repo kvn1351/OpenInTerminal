@@ -234,6 +234,7 @@ public class DefaultsManager {
     /// each old menu's enabled state and item order.
     public func migrateLegacyCustomMenuActionsIfNeeded() {
         let versionKey = "OIT_CustomMenuMigrationVersion"
+        guard Defaults.integer(forKey: versionKey) < 1 else { return }
         func markMigrationComplete() {
             Defaults.set(1, forKey: versionKey)
             Defaults.synchronize()

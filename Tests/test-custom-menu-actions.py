@@ -35,6 +35,7 @@ let scriptAction = CustomMenuAction(cliScript: "Run Checks",
 let contextAction = CustomMenuAction(application: App(name: "TextEdit", type: .editor))
 manager.toolbarMenuActions = [scriptAction] + manager.toolbarMenuActions
 manager.contextMenuActions = [contextAction]
+manager.migrateLegacyCustomMenuActionsIfNeeded()
 precondition(manager.toolbarMenuActions.map(\.name) == ["Run Checks", "Ghostty", "Zed"])
 precondition(manager.contextMenuActions.map(\.name) == ["TextEdit"])
 precondition(manager.toolbarMenuActions[0].arguments == ["--mode", "value with spaces"])
