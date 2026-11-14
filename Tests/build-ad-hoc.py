@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import json
+import plistlib
 import shutil
 from pathlib import Path
 import subprocess
@@ -32,7 +33,9 @@ print(f'Output: {out}', flush=True)
 with (out/'build.log').open('w') as log:
     subprocess.run(build+['build'], cwd=source, stdout=log, stderr=subprocess.STDOUT, check=True)
 products=out/'build/Build/Products/Release'
-package=out/'OpenInTerminal-ad-hoc'
+with (products/'OpenInTerminal.app/Contents/Info.plist').open('rb') as info:
+    version=plistlib.load(info)['CFBundleShortVersionString']
+package=out/f'OpenInTerminal-{version}'
 package.mkdir()
 app=package/'OpenInTerminal.app'
 def run(*command):
@@ -52,14 +55,15 @@ for path in [app,*app.rglob('*.appex'),*app.rglob('*.app'),*app.rglob('*.framewo
     details=subprocess.run(['codesign','-dv','--verbose=4',str(path)],capture_output=True,text=True,check=True).stderr
     if 'Signature=adhoc' not in details or 'TeamIdentifier=not set' not in details:
         raise RuntimeError(f'Unexpected non-ad-hoc signature: {path}')
-(package/'READ-ME-FIRST.md').write_text((root/'docs/ad-hoc-build.md').read_text().replace('(macos27-validation.md)', '(https://github.com/chillednems/OpenInTerminal/blob/agent/fix-macos-27-preferences-hotkeys/docs/macos27-validation.md)'))
-evidence={'revision':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),
+shutil.copy2(root/'docs/ad-hoc-build.md', package/'READ-ME-FIRST.md')
+evidence={'version':version,
+          'revision':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),
           'signing':'ad hoc; no Apple Developer Team ID or personal certificate',
           'notarization':'not performed','deployment_target_override':args.deployment_target,
           'architectures':subprocess.check_output(['lipo','-archs',str(app/'Contents/MacOS/OpenInTerminal')],text=True).strip(),
-          'finder_shared_preferences':'not supported by this artifact; see READ-ME-FIRST.md'}
+          'finder_shared_preferences':'file-based bridge via the Finder extension Application Scripts directory'}
 (package/'build-info.json').write_text(json.dumps(evidence,indent=2)+'\n')
-archive=out/'OpenInTerminal-ad-hoc.zip'
+archive=out/f'{package.name}.zip'
 run('ditto','-c','-k','--norsrc','--noextattr','--keepParent',str(package),str(archive))
 run('ditto','-x','-k',str(archive),str(out/'extracted'))
 run('codesign','--verify','--deep','--strict',str(out/'extracted'/package.name/app.name))

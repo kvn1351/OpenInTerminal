@@ -70,6 +70,16 @@ Become a sponsor through [GitHub Sponsors](https://github.com/sponsors/Ji4n1ng) 
 
 ## Changes 🗒
 
+### 2.5.0 — fork release
+
+- Restore Finder toolbar/context actions and durable preferences on modern macOS.
+- Run CLI executables with optional arguments in the preferred terminal and Finder folder.
+- Configure separate ordered toolbar/right-click action lists using a clearer segmented selector.
+- Set icon styles independently for each menu, including Copy path.
+- Preserve custom actions across restarts and keep the CLI arguments editor visible.
+
+Download the universal macOS app from [Releases](https://github.com/kvn1351/OpenInTerminal/releases/latest). This build is ad-hoc signed and not notarized; read the [installation and security notes](docs/ad-hoc-build.md).
+
 <details><summary>show all</summary><br>
 <p><strong>version 2.3.9</strong></p>
 <ul>
