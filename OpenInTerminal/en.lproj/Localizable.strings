@@ -21,6 +21,12 @@
 
 "pref.toolbar.not_installed" = "Not Installed";
 
+"pref.custom.target.toolbar" = "Finder Toolbar";
+"pref.custom.target.context" = "Right-click Menu";
+"pref.custom.target.label" = "Finder menu to configure";
+"pref.custom.target.toolbar_description" = "Actions in the OpenInTerminal toolbar menu in Finder. Changes affect only this menu.";
+"pref.custom.target.context_description" = "Actions when you right-click in Finder. Changes affect only this menu.";
+
 "alert.pick_terminal_title" = "Open In?";
 "alert.pick_terminal_description" = "Please select one of the following terminals as the default terminal to open.";
 

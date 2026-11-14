@@ -21,6 +21,12 @@
 
 "pref.toolbar.not_installed" = "Non Installato";
 
+"pref.custom.target.toolbar" = "Barra del Finder";
+"pref.custom.target.context" = "Menu contestuale";
+"pref.custom.target.label" = "Menu del Finder da configurare";
+"pref.custom.target.toolbar_description" = "Azioni del menu OpenInTerminal nella barra del Finder. Le modifiche riguardano solo questo menu.";
+"pref.custom.target.context_description" = "Azioni del clic destro nel Finder. Le modifiche riguardano solo questo menu.";
+
 "alert.pick_terminal_title" = "Apri con?";
 "alert.pick_terminal_description" = "Seleziona uno dei seguenti terminali per impostarlo come terminale default.";
 

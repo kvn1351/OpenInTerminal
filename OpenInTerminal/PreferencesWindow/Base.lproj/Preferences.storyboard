@@ -423,6 +423,30 @@
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
+                                    <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="KkT-9M-tgt">
+                                        <rect key="frame" x="20" y="280" width="349" height="24"/>
+                                        <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="selectOne" selectedSegment="1" id="B7m-4J-tgt">
+                                            <font key="font" metaFont="system"/>
+                                            <segments>
+                                                <segment label="Finder Toolbar" width="174"/>
+                                                <segment label="Right-click Menu" width="174" selected="YES"/>
+                                            </segments>
+                                        </segmentedCell>
+                                        <connections>
+                                            <action selector="menuTargetChanged:" target="s5W-qL-1Xs" id="sEl-8M-tgt"/>
+                                        </connections>
+                                    </segmentedControl>
+                                    <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Hlp-4M-tgt">
+                                        <rect key="frame" x="20" y="244" width="349" height="28"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="28" id="hHt-2M-tgt"/>
+                                        </constraints>
+                                        <textFieldCell key="cell" lineBreakMode="wordWrapping" title="Actions when you right-click in Finder. Changes affect only this menu." id="Txt-4M-tgt">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
                                     <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="-1" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5GI-nM-TKa">
                                         <rect key="frame" x="20" y="152" width="349" height="154"/>
                                         <subviews>
@@ -546,26 +570,6 @@
                                             <real value="3.4028234663852886e+38"/>
                                         </customSpacing>
                                     </stackView>
-                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jia-nD-S9J">
-                                        <rect key="frame" x="20" y="128" width="201" height="16"/>
-                                        <buttonCell key="cell" type="radio" title="Edit Finder Toolbar Menu" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="2we-f7-s2N">
-                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                            <font key="font" metaFont="system"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="selectToolbarMenuClicked:" target="s5W-qL-1Xs" id="P7k-7z-2dk"/>
-                                        </connections>
-                                    </button>
-                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="teH-Uy-YOq" userLabel="Context Menu Target">
-                                        <rect key="frame" x="20" y="104" width="203" height="16"/>
-                                        <buttonCell key="cell" type="radio" title="Edit Finder Context Menu" bezelStyle="regularSquare" imagePosition="left" state="off" inset="2" id="RhP-R5-Wwt">
-                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                            <font key="font" metaFont="system"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="selectContextMenuClicked:" target="s5W-qL-1Xs" id="hiv-kz-pHw"/>
-                                        </connections>
-                                    </button>
                                     <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4us-6x-3pQ">
                                         <rect key="frame" x="20" y="64" width="253" height="32"/>
                                         <subviews>
@@ -682,9 +686,11 @@
                                 <constraints>
                                     <constraint firstItem="4us-6x-3pQ" firstAttribute="leading" secondItem="pxi-dF-LO8" secondAttribute="leading" constant="20" id="CRm-C6-eJK"/>
                                     <constraint firstItem="5GI-nM-TKa" firstAttribute="leading" secondItem="pxi-dF-LO8" secondAttribute="leading" constant="20" id="Erw-fg-klC"/>
-                                    <constraint firstItem="teH-Uy-YOq" firstAttribute="leading" secondItem="pxi-dF-LO8" secondAttribute="leading" constant="20" id="hcZ-Kv-8Sj"/>
+                                    <constraint firstItem="KkT-9M-tgt" firstAttribute="leading" secondItem="pxi-dF-LO8" secondAttribute="leading" constant="20" id="lEd-8M-tgt"/>
+                                    <constraint firstAttribute="trailing" secondItem="KkT-9M-tgt" secondAttribute="trailing" constant="20" id="tRl-8M-tgt"/>
                                     <constraint firstAttribute="trailing" secondItem="5GI-nM-TKa" secondAttribute="trailing" constant="20" id="kNC-OB-Jgy"/>
-                                    <constraint firstItem="jia-nD-S9J" firstAttribute="leading" secondItem="pxi-dF-LO8" secondAttribute="leading" constant="20" id="wim-XS-cz0"/>
+                                    <constraint firstItem="Hlp-4M-tgt" firstAttribute="leading" secondItem="pxi-dF-LO8" secondAttribute="leading" constant="20" id="lEd-4M-hlp"/>
+                                    <constraint firstAttribute="trailing" secondItem="Hlp-4M-tgt" secondAttribute="trailing" constant="20" id="tRl-4M-hlp"/>
                                 </constraints>
                                 <visibilityPriorities>
                                     <integer value="1000"/>
@@ -719,8 +725,8 @@
                     </view>
                     <connections>
                         <outlet property="addMenuOptionButton" destination="krU-9a-aOM" id="Mha-o5-VDh"/>
-                        <outlet property="contextMenuTargetButton" destination="teH-Uy-YOq" id="W1V-mC-hRa"/>
-                        <outlet property="toolbarMenuTargetButton" destination="jia-nD-S9J" id="Rfo-00-9Ss"/>
+                        <outlet property="menuTargetControl" destination="KkT-9M-tgt" id="cTr-8M-tgt"/>
+                        <outlet property="menuTargetDescription" destination="Hlp-4M-tgt" id="dSc-8M-tgt"/>
                         <outlet property="customMenuTableView" destination="zAU-AM-qPB" id="TAv-cq-hfF"/>
                         <outlet property="iTermTabButton" destination="Lmz-5e-p2j" id="Vr0-XJ-pnx"/>
                         <outlet property="iTermTextField" destination="wVI-dH-WOK" id="oeJ-Rq-h9e"/>

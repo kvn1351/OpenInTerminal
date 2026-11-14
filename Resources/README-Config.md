@@ -88,7 +88,7 @@ For macOS 14 and earlier, ensure the Finder Extension is enabled via System Pref
 
 ### Custom Finder Actions
 
-The **Custom** preferences pane keeps independent ordered lists for the **Finder Toolbar Menu** and **Finder Context Menu**. Select a list, use **+** to add or **−** to remove entries, and drag rows to change their order. Changes affect only the selected list.
+The **Custom** preferences pane keeps independent ordered lists for the Finder toolbar and right-click menus. Use the **Finder Toolbar / Right-click Menu** segmented selector above the list to choose which menu to configure. Use **+** to add or **−** to remove entries, and drag rows to change their order. The description identifies where the selected menu appears; changes affect only that list.
 
 To add a CLI action, choose **+ → Add CLI Script…** and select an executable file—either a script or the CLI binary itself; no wrapper is needed for an executable binary. Enter a menu title and optional arguments, **one per line**; spaces within a line stay in that argument. The executable runs with the Finder folder as its working directory in the preferred terminal. Direct CLI launch is supported for Terminal, iTerm, Alacritty, kitty, WezTerm, and Ghostty.
 

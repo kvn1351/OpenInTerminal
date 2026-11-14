@@ -23,8 +23,8 @@ class CustomPreferencesViewController: PreferencesViewController {
     @IBOutlet weak var customMenuTableView: NSTableView!
     @IBOutlet weak var addMenuOptionButton: NSButton!
     var addOptionMenu: NSMenu = NSMenu()
-    @IBOutlet weak var toolbarMenuTargetButton: NSButton!
-    @IBOutlet weak var contextMenuTargetButton: NSButton!
+    @IBOutlet weak var menuTargetControl: NSSegmentedControl!
+    @IBOutlet weak var menuTargetDescription: NSTextField!
     
     @IBOutlet weak var noIconButton: NSButton!
     @IBOutlet weak var simpleIconButton: NSButton!
@@ -62,6 +62,10 @@ class CustomPreferencesViewController: PreferencesViewController {
         customMenuTableView.dataSource = self
         customMenuTableView.delegate = self
         customMenuTableView.registerForDraggedTypes([dragDropType])
+        menuTargetControl.segmentDistribution = .fillEqually
+        menuTargetControl.setLabel(NSLocalizedString("pref.custom.target.toolbar", value: "Finder Toolbar", comment: "Finder action list selector"), forSegment: 0)
+        menuTargetControl.setLabel(NSLocalizedString("pref.custom.target.context", value: "Right-click Menu", comment: "Finder action list selector"), forSegment: 1)
+        menuTargetControl.setAccessibilityLabel(NSLocalizedString("pref.custom.target.label", value: "Finder menu to configure", comment: "Action list selector accessibility label"))
     }
     
     override func viewWillAppear() {
@@ -134,8 +138,10 @@ class CustomPreferencesViewController: PreferencesViewController {
     }
     
     func refreshCustomButtons() {
-        toolbarMenuTargetButton.state = customMenuTarget == .toolbar ? .on : .off
-        contextMenuTargetButton.state = customMenuTarget == .context ? .on : .off
+        menuTargetControl.selectedSegment = customMenuTarget == .toolbar ? 0 : 1
+        menuTargetDescription.stringValue = customMenuTarget == .toolbar
+            ? NSLocalizedString("pref.custom.target.toolbar_description", value: "Actions in the OpenInTerminal toolbar menu in Finder. Changes affect only this menu.", comment: "Toolbar action list explanation")
+            : NSLocalizedString("pref.custom.target.context_description", value: "Actions when you right-click in Finder. Changes affect only this menu.", comment: "Context action list explanation")
         let isPathEscaped = DefaultsManager.shared.isPathEscaped
         pathYesButton.state = isPathEscaped ? .on : .off
         pathNoButton.state = isPathEscaped ? .off : .on
@@ -144,6 +150,7 @@ class CustomPreferencesViewController: PreferencesViewController {
     func selectMenuTarget(_ target: CustomMenuTarget) {
         customMenuTarget = target
         refreshCustomButtons()
+        customMenuTableView.deselectAll(nil)
         customMenuActions = DefaultsManager.shared.menuActions(for: target)
     }
     
@@ -366,12 +373,8 @@ class CustomPreferencesViewController: PreferencesViewController {
         customMenuActions.remove(at: row)
     }
 
-    @IBAction func selectToolbarMenuClicked(_ sender: NSButton) {
-        selectMenuTarget(.toolbar)
-    }
-
-    @IBAction func selectContextMenuClicked(_ sender: NSButton) {
-        selectMenuTarget(.context)
+    @IBAction func menuTargetChanged(_ sender: NSSegmentedControl) {
+        selectMenuTarget(sender.selectedSegment == 0 ? .toolbar : .context)
     }
     
     func showCustomInputViewController(_ appName: String = "") {

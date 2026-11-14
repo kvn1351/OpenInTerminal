@@ -21,6 +21,12 @@
 
 "pref.toolbar.not_installed" = "Yüklü Değil";
 
+"pref.custom.target.toolbar" = "Finder Araç Çubuğu";
+"pref.custom.target.context" = "Sağ Tık Menüsü";
+"pref.custom.target.label" = "Yapılandırılacak Finder menüsü";
+"pref.custom.target.toolbar_description" = "Finder araç çubuğundaki OpenInTerminal menüsünün eylemleri. Değişiklikler yalnızca bu menüyü etkiler.";
+"pref.custom.target.context_description" = "Finder'da sağ tıkladığınızda gösterilen eylemler. Değişiklikler yalnızca bu menüyü etkiler.";
+
 "alert.pick_terminal_title" = "Şununla Aç?";
 "alert.pick_terminal_description" = "Lütfen belirtilen terminallerden birini varsayılan olarak ayarlamak için seçin.";
 

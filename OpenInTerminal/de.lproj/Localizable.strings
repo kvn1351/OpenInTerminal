@@ -21,6 +21,12 @@
 
 "pref.toolbar.not_installed" = "Nicht installiert";
 
+"pref.custom.target.toolbar" = "Finder-Symbolleiste";
+"pref.custom.target.context" = "Kontextmenü";
+"pref.custom.target.label" = "Zu konfigurierendes Finder-Menü";
+"pref.custom.target.toolbar_description" = "Aktionen im OpenInTerminal-Menü der Finder-Symbolleiste. Änderungen gelten nur für dieses Menü.";
+"pref.custom.target.context_description" = "Aktionen beim Rechtsklick im Finder. Änderungen gelten nur für dieses Menü.";
+
 "alert.pick_terminal_title" = "Öffnen mit?";
 "alert.pick_terminal_description" = "Bitte wählen Sie eines der folgenden Terminals als Standard zum Öffnen.";
 

@@ -21,6 +21,12 @@
 
 "pref.toolbar.not_installed" = "설치되지 않음";
 
+"pref.custom.target.toolbar" = "Finder 도구 막대";
+"pref.custom.target.context" = "우클릭 메뉴";
+"pref.custom.target.label" = "설정할 Finder 메뉴";
+"pref.custom.target.toolbar_description" = "Finder 도구 막대의 OpenInTerminal 메뉴 동작입니다. 변경 사항은 이 메뉴에만 적용됩니다.";
+"pref.custom.target.context_description" = "Finder에서 우클릭할 때 표시되는 동작입니다. 변경 사항은 이 메뉴에만 적용됩니다.";
+
 "alert.pick_terminal_title" = "어디서 열까요?";
 "alert.pick_terminal_description" = "다음 터미널 중 기본 터미널로 사용할 하나를 선택해주세요.";
 

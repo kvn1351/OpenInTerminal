@@ -121,66 +121,6 @@
         }
       }
     },
-    "2we-f7-s2N.title" : {
-      "comment" : "Class = \"NSButtonCell\"; title = \"Edit Finder Toolbar Menu\"; ObjectID = \"2we-f7-s2N\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Finder-Symbolleistenmenü bearbeiten"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Edit Finder Toolbar Menu"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Editar el menú de la barra de herramientas del Finder"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modifier le menu de la barre d’outils du Finder"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modifica il menu della barra strumenti del Finder"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Finder 도구 막대 메뉴 편집"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Изменить меню панели инструментов Finder"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Finder araç çubuğu menüsünü düzenle"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "编辑访达工具栏菜单"
-          }
-        }
-      }
-    },
     "5f3-UK-Rft.title" : {
       "comment" : "Class = \"NSWindow\"; title = \"Preferences\"; ObjectID = \"5f3-UK-Rft\";",
       "extractionState" : "extracted_with_value",
@@ -2769,66 +2709,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "退出 OpenInTerminal"
-          }
-        }
-      }
-    },
-    "RhP-R5-Wwt.title" : {
-      "comment" : "Class = \"NSButtonCell\"; title = \"Edit Finder Context Menu\"; ObjectID = \"RhP-R5-Wwt\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Finder-Kontextmenü bearbeiten"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Edit Finder Context Menu"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Editar el menú contextual del Finder"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modifier le menu contextuel du Finder"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modifica il menu contestuale del Finder"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Finder 컨텍스트 메뉴 편집"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Изменить контекстное меню Finder"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Finder bağlam menüsünü düzenle"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "编辑访达上下文菜单"
           }
         }
       }

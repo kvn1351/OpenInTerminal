@@ -37,6 +37,7 @@ This file records upstream changes manually adapted into this checkout. “Adapt
 - Fix Finder action dispatch using `NSMenuItem.tag` and a menu-local action snapshot: Finder's XPC menu transport drops `representedObject`, so UUID lookup there silently discarded every custom application/CLI click.
 - Keep custom-menu migration one-time so restarts preserve CLI entries, and explicitly size the CLI arguments editor.
 - Do not inspect the CLI executable from the Finder extension sandbox: a binary selected in the host picker can be inaccessible there. Pass its path to the out-of-sandbox script/terminal, which executes it with the user's access.
+- Replace the menu-target radio buttons with a localized segmented selector above the action list and a description of the selected Finder menu.
 
 ## Reviewed, not adapted
 

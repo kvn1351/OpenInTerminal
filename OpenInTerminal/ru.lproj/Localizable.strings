@@ -21,6 +21,12 @@
 
 "pref.toolbar.not_installed" = "Не установлено";
 
+"pref.custom.target.toolbar" = "Панель Finder";
+"pref.custom.target.context" = "Контекстное меню";
+"pref.custom.target.label" = "Настраиваемое меню Finder";
+"pref.custom.target.toolbar_description" = "Действия меню OpenInTerminal на панели Finder. Изменения касаются только этого меню.";
+"pref.custom.target.context_description" = "Действия при щелчке правой кнопкой в Finder. Изменения касаются только этого меню.";
+
 "alert.pick_terminal_title" = "Открыть в?";
 "alert.pick_terminal_description" = "Пожалуйста, выберите один из доступных терминалов для установки по-умолчанию.";
 

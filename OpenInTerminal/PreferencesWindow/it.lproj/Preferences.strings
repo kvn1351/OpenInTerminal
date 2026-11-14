@@ -5,9 +5,6 @@
 /* Class = "NSTextFieldCell"; title = "⚠️ Note that this will reset all user preferences"; ObjectID = "2Rg-te-FPU"; */
 "2Rg-te-FPU.title" = "⚠️ Tutte le Preferenze utente saranno ripristinate";
 
-/* Class = "NSButtonCell"; title = "Apply to Finder Toolbar Menu"; ObjectID = "2we-f7-s2N"; */
- "2we-f7-s2N.title" = "Modifica il menu della barra strumenti del Finder";
-
 /* Class = "NSButtonCell"; title = "Tab"; ObjectID = "4ss-CQ-brT"; */
 "4ss-CQ-brT.title" = "Pannello";
 
@@ -61,9 +58,6 @@
 
 /* Class = "NSTextFieldCell"; title = "🐦 Twitter:"; ObjectID = "NZE-zU-6ss"; */
 "NZE-zU-6ss.title" = "🐦 Twitter:";
-
-/* Class = "NSButtonCell"; title = "Apply to Finder Context Menu"; ObjectID = "RhP-R5-Wwt"; */
- "RhP-R5-Wwt.title" = "Modifica il menu contestuale del Finder";
 
 /* Class = "NSButtonCell"; title = "Alipay"; ObjectID = "Sw7-of-ecf"; */
 "Sw7-of-ecf.title" = "Alipay";

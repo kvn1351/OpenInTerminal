@@ -21,6 +21,12 @@
 
 "pref.toolbar.not_installed" = "未安装";
 
+"pref.custom.target.toolbar" = "访达工具栏";
+"pref.custom.target.context" = "右键菜单";
+"pref.custom.target.label" = "选择要设置的访达菜单";
+"pref.custom.target.toolbar_description" = "访达工具栏中 OpenInTerminal 菜单的操作。更改仅影响此菜单。";
+"pref.custom.target.context_description" = "在访达中点击右键时显示的操作。更改仅影响此菜单。";
+
 "alert.pick_terminal_title" = "打开?";
 "alert.pick_terminal_description" = "请在下面的终端中选择一个作为默认终端。";
 
