@@ -26,6 +26,10 @@ killall Finder
 
 This fork shares preferences through `~/Library/Application Scripts/wang.jianing.app.OpenInTerminal.OpenInTerminalFinderExtension/shared-settings.plist`. It does not require authorization for the upstream developer's App Group. The host writes the snapshot; the sandboxed Finder extension reads it.
 
-The release contains Apple Silicon (`arm64`) and Intel (`x86_64`) code. It is built with Xcode 27 using a macOS 12 deployment-target override; the repository's original minimum target is unchanged. Runtime validation was performed on macOS 27; older versions are unverified.
+Release assets are built and tested by GitHub Actions on a macOS runner, not uploaded from a developer's local build. The ZIP contains Apple Silicon (`arm64`) and Intel (`x86_64`) code; `build-info.json` records the exact revision, Xcode, SDK, architectures, and signing mode. The workflow uses a macOS 12 deployment-target override; the repository's original minimum target is unchanged. Interactive runtime validation was performed on macOS 27; older versions are unverified.
 
 See [configuration instructions](https://github.com/kvn1351/OpenInTerminal/blob/main/Resources/README-Config.md) and [integration provenance](https://github.com/kvn1351/OpenInTerminal/blob/main/UPSTREAM_INTEGRATIONS.md). Historical signed-build reports refer to separate artifacts, not this ad-hoc release.
+
+## Publishing a release
+
+Update the full app, extension, helper, and core framework versions, commit the changes, and push a matching `vX.Y.Z` tag. The [Release workflow](https://github.com/kvn1351/OpenInTerminal/actions/workflows/release.yml) builds a universal app, verifies nested ad-hoc signatures and the extracted ZIP, checks tag/version consistency and checksums, runs focused regressions, and publishes the ZIP, `SHA256SUMS`, and `build-info.json` only after every check passes. No signing certificate or notarization credentials are configured.

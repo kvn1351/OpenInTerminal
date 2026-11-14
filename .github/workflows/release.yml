@@ -1,0 +1,98 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build, test, and publish universal macOS app
+    runs-on: macos-26
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+      TAG: ${{ github.ref_name }}
+    steps:
+      - name: Check out release tag
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Build and package ad-hoc app
+        id: build
+        shell: bash
+        run: |
+          set -euo pipefail
+          xcodebuild -version
+          python3 Tests/build-ad-hoc.py --deployment-target 12.0 | tee "$RUNNER_TEMP/release-build.log"
+          output=$(awk '/^Output: / {sub(/^Output: /, ""); print; exit}' "$RUNNER_TEMP/release-build.log")
+          echo "directory=$output" >> "$GITHUB_OUTPUT"
+
+      - name: Check release metadata and checksum
+        env:
+          BUILD_DIRECTORY: ${{ steps.build.outputs.directory }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path(os.environ['BUILD_DIRECTORY'])
+          version = os.environ['TAG'].removeprefix('v')
+          info = json.loads((root / f'OpenInTerminal-{version}/build-info.json').read_text())
+          assert info['version'] == version, 'Tag and app version differ'
+          assert info['revision'] == os.environ['GITHUB_SHA'], 'Build revision differs from tag'
+          assert set(info['architectures'].split()) == {'arm64', 'x86_64'}, 'App is not universal'
+          print(json.dumps(info, indent=2))
+          PY
+          cd "$BUILD_DIRECTORY"
+          shasum -a 256 -c SHA256SUMS
+
+      - name: Run focused regressions
+        env:
+          BUILD_DIRECTORY: ${{ steps.build.outputs.directory }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          products="$BUILD_DIRECTORY/build/Build/Products/Release"
+          python3 Tests/test-defaults-migration.py
+          python3 Tests/test-custom-menu-actions.py "$products"
+          python3 Tests/test-finder-menu-dispatch.py "$products"
+
+      - name: Publish release and CI-built assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BUILD_DIRECTORY: ${{ steps.build.outputs.directory }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${TAG#v}"
+          gh release create "$TAG" \
+            "$BUILD_DIRECTORY/OpenInTerminal-$version.zip" \
+            "$BUILD_DIRECTORY/SHA256SUMS" \
+            "$BUILD_DIRECTORY/OpenInTerminal-$version/build-info.json" \
+            --verify-tag --title "$version" --latest --generate-notes \
+            --notes "Universal macOS build (Apple Silicon and Intel), built and tested by GitHub Actions. This unofficial fork is ad-hoc signed and **not notarized**; macOS may block it until you explicitly trust it. Read the [installation and security notes](https://github.com/$GH_REPO/blob/$TAG/docs/ad-hoc-build.md) before installing."
+
+      - name: Show compiler log on failure
+        if: failure()
+        shell: bash
+        run: |
+          if [[ -f "$RUNNER_TEMP/release-build.log" ]]; then
+            output=$(awk '/^Output: / {sub(/^Output: /, ""); print; exit}' "$RUNNER_TEMP/release-build.log")
+            if [[ -f "$output/build.log" ]]; then
+              tail -n 200 "$output/build.log"
+            fi
+          fi

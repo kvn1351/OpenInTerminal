@@ -61,6 +61,8 @@ evidence={'version':version,
           'signing':'ad hoc; no Apple Developer Team ID or personal certificate',
           'notarization':'not performed','deployment_target_override':args.deployment_target,
           'architectures':subprocess.check_output(['lipo','-archs',str(app/'Contents/MacOS/OpenInTerminal')],text=True).strip(),
+          'xcode':subprocess.check_output(['xcodebuild','-version'],text=True).strip(),
+          'macos_sdk':subprocess.check_output(['xcrun','--sdk','macosx','--show-sdk-version'],text=True).strip(),
           'finder_shared_preferences':'file-based bridge via the Finder extension Application Scripts directory'}
 (package/'build-info.json').write_text(json.dumps(evidence,indent=2)+'\n')
 archive=out/f'{package.name}.zip'
