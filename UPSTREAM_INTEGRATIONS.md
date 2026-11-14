@@ -38,6 +38,7 @@ This file records upstream changes manually adapted into this checkout. “Adapt
 - Keep custom-menu migration one-time so restarts preserve CLI entries, and explicitly size the CLI arguments editor.
 - Do not inspect the CLI executable from the Finder extension sandbox: a binary selected in the host picker can be inaccessible there. Pass its path to the out-of-sandbox script/terminal, which executes it with the user's access.
 - Replace the menu-target radio buttons with a localized segmented selector above the action list and a description of the selected Finder menu.
+- Store independent toolbar/right-click icon styles, migrate the previous shared style without overwriting per-menu choices, and apply each style to application and Copy path items in custom/default menus.
 
 ## Reviewed, not adapted
 

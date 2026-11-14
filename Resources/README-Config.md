@@ -90,6 +90,8 @@ For macOS 14 and earlier, ensure the Finder Extension is enabled via System Pref
 
 The **Custom** preferences pane keeps independent ordered lists for the Finder toolbar and right-click menus. Use the **Finder Toolbar / Right-click Menu** segmented selector above the list to choose which menu to configure. Use **+** to add or **−** to remove entries, and drag rows to change their order. The description identifies where the selected menu appears; changes affect only that list.
 
+**Icon Type** is also independent for each menu. Switching tabs restores that menu's icon style, including its **Copy path** icon. On upgrade, both menus inherit the previous shared style unless a per-menu setting already exists.
+
 To add a CLI action, choose **+ → Add CLI Script…** and select an executable file—either a script or the CLI binary itself; no wrapper is needed for an executable binary. Enter a menu title and optional arguments, **one per line**; spaces within a line stay in that argument. The executable runs with the Finder folder as its working directory in the preferred terminal. Direct CLI launch is supported for Terminal, iTerm, Alacritty, kitty, WezTerm, and Ghostty.
 
 On first use, macOS may ask permission for OpenInTerminal to control Terminal or iTerm. Allow it under **System Settings → Privacy & Security → Automation**; otherwise the terminal may not accept the command.

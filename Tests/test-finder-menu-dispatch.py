@@ -19,6 +19,10 @@ final class DispatchProbe: FinderSync {
 }
 
 let application = NSApplication.shared
+let suiteName = "test.openinterminal.finder-icons.\(UUID().uuidString)"
+let store = UserDefaults(suiteName: suiteName)!
+Defaults = store
+defer { store.removePersistentDomain(forName: suiteName) }
 let probe = DispatchProbe()
 let terminal = App(name: "Terminal", type: .terminal)
 let editor = App(name: "TextEdit", type: .editor)
@@ -27,7 +31,7 @@ var second = CustomMenuAction(application: editor)
 // Duplicate titles must not affect action identity.
 first.name = "Open"
 second.name = "Open"
-let menu = probe.createCustomMenu(actions: [first, second], useSubmenu: false)
+let menu = probe.createCustomMenu(actions: [first, second], target: .toolbar, useSubmenu: false)
 for item in menu.items.prefix(2) {
     let transportedItem = NSMenuItem(title: item.title, action: item.action, keyEquivalent: "")
     transportedItem.tag = item.tag
@@ -36,13 +40,32 @@ for item in menu.items.prefix(2) {
 }
 precondition(probe.opened == [terminal, editor], "Finder transport lost action identity")
 
-let groupedMenu = probe.createCustomMenu(actions: [second], useSubmenu: true)
+let groupedMenu = probe.createCustomMenu(actions: [second], target: .context, useSubmenu: true)
 let groupedItem = groupedMenu.items[0].submenu!.items[0]
 let transportedItem = NSMenuItem(title: groupedItem.title, action: groupedItem.action, keyEquivalent: "")
 transportedItem.tag = groupedItem.tag
 probe.customMenuItemClicked(transportedItem)
 precondition(probe.opened == [terminal, editor, editor], "Grouped menu dispatched an outdated action")
 
+// Register predictable image resources in this standalone, non-extension bundle.
+let simpleImage = NSImage(size: NSSize(width: 16, height: 16))
+simpleImage.setName("context_menu_icon_terminal")
+let editorImage = NSImage(size: NSSize(width: 16, height: 16))
+editorImage.setName("context_menu_icon_editor")
+let copyImage = NSImage(size: NSSize(width: 16, height: 16))
+copyImage.setName("context_menu_icon_path")
+let manager = DefaultsManager.shared
+manager.setMenuIconOption(.simple, for: .toolbar)
+manager.setMenuIconOption(.no, for: .context)
+let toolbar = probe.createCustomMenu(actions: [first, second], target: .toolbar, useSubmenu: false)
+precondition(toolbar.items.map(\.image) == [simpleImage, editorImage, copyImage])
+let context = probe.createCustomMenu(actions: [first, second], target: .context, useSubmenu: true).items[0].submenu!
+precondition(context.items.allSatisfy { $0.image == nil })
+let fallbackToolbar = probe.createDefaultMenu(target: .toolbar, useSubmenu: false)
+precondition(fallbackToolbar.items.map(\.image) == [simpleImage, editorImage, copyImage])
+let fallbackContext = probe.createDefaultMenu(target: .context, useSubmenu: false)
+precondition(fallbackContext.items.allSatisfy { $0.image == nil })
+print("PASS: independent icons for custom/default menus, submenus, and Copy path")
 print("PASS: Finder-transported tags dispatch duplicate titles and grouped menus")
 '''
 with tempfile.TemporaryDirectory(prefix="oit-menu-dispatch-") as temporary:

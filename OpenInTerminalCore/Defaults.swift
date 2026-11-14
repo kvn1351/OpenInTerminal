@@ -27,6 +27,8 @@ private let legacyPreferenceKeys = [
     "CustomMenuApplyToToolbar",
     "CustomMenuApplyToContext",
     "CustomMenuIconOption",
+    "ToolbarMenuIconOption",
+    "ContextMenuIconOption",
     "PathEscapeOption",
     "KittyCommand",
     "OnlyActivateShortcutsInFinder",
@@ -221,7 +223,9 @@ public extension DefaultsKeys {
     static let customMenuApplyToContext = DefaultsKey<Bool>("CustomMenuApplyToContext")
     static let toolbarMenuActions = DefaultsKey<Data>("ToolbarMenuActions")
     static let contextMenuActions = DefaultsKey<Data>("ContextMenuActions")
-    static let customMenuIconOption = DefaultsKey<String>("CustomMenuIconOption")
+    static let legacyCustomMenuIconOption = DefaultsKey<String>("CustomMenuIconOption")
+    static let toolbarMenuIconOption = DefaultsKey<String>("ToolbarMenuIconOption")
+    static let contextMenuIconOption = DefaultsKey<String>("ContextMenuIconOption")
     static let pathEscapeOption = DefaultsKey<Bool>("PathEscapeOption")
     static let kittyCommand = DefaultsKey<String>("KittyCommand")
     static let onlyActivateShortcutsInFinder = DefaultsKey<Bool>("OnlyActivateShortcutsInFinder")

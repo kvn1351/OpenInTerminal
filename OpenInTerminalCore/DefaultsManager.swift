@@ -259,16 +259,35 @@ public class DefaultsManager {
         markMigrationComplete()
     
     }
-    public var customMenuIconOption: CustomMenuIconOption {
-        get {
-            let optionValue = Defaults[.customMenuIconOption] ?? "no"
-            let option = CustomMenuIconOption(rawValue: optionValue)
-            return option ?? .no
+    private func menuIconKey(for target: CustomMenuTarget) -> DefaultsKey<String> {
+        switch target {
+        case .toolbar: return .toolbarMenuIconOption
+        case .context: return .contextMenuIconOption
         }
-        
-        set {
-            Defaults[.customMenuIconOption] = newValue.rawValue
+    }
+
+    public func menuIconOption(for target: CustomMenuTarget) -> CustomMenuIconOption {
+        CustomMenuIconOption(rawValue: Defaults[menuIconKey(for: target)] ?? "") ?? .no
+    }
+
+    public func setMenuIconOption(_ option: CustomMenuIconOption, for target: CustomMenuTarget) {
+        Defaults[menuIconKey(for: target)] = option.rawValue
+    }
+
+    private func migrateLegacyMenuIconOptionsIfNeeded() {
+        guard Defaults[.legacyCustomMenuIconOption] != nil ||
+              Defaults[.toolbarMenuIconOption] == nil ||
+              Defaults[.contextMenuIconOption] == nil else { return }
+        let legacyOption = CustomMenuIconOption(rawValue: Defaults[.legacyCustomMenuIconOption] ?? "") ?? .no
+        if Defaults[.toolbarMenuIconOption] == nil {
+            setMenuIconOption(legacyOption, for: .toolbar)
         }
+        if Defaults[.contextMenuIconOption] == nil {
+            setMenuIconOption(legacyOption, for: .context)
+        }
+        Defaults.removeObject(forKey: DefaultsKeys.legacyCustomMenuIconOption._key)
+        SharedConfig.set(nil, forKey: DefaultsKeys.legacyCustomMenuIconOption._key)
+        Defaults.synchronize()
     }
     
     public var isPathEscaped: Bool {
@@ -281,8 +300,8 @@ public class DefaultsManager {
         }
     }
 
-    public func getAppIcon(_ app: App) -> NSImage? {
-        switch customMenuIconOption {
+    public func getAppIcon(_ app: App, for target: CustomMenuTarget) -> NSImage? {
+        switch menuIconOption(for: target) {
         case .no:
             return nil
         case .simple:
@@ -393,6 +412,7 @@ public class DefaultsManager {
     
     public func firstSetup() {
         migrateLegacyCustomMenuActionsIfNeeded()
+        migrateLegacyMenuIconOptionsIfNeeded()
         guard isFirstSetup == false else { return }
         logw("First Setup")
         isFirstSetup = true
@@ -406,7 +426,6 @@ public class DefaultsManager {
         defaultEditor = SupportedApps.textEdit.app
         setNewOption(.terminal, .window)
         setNewOption(.iTerm, .window)
-        customMenuIconOption = .no
         isPathEscaped = true
         Defaults.synchronize()
     }

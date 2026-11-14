@@ -40,6 +40,19 @@ precondition(manager.toolbarMenuActions.map(\.name) == ["Run Checks", "Ghostty",
 precondition(manager.contextMenuActions.map(\.name) == ["TextEdit"])
 precondition(manager.toolbarMenuActions[0].arguments == ["--mode", "value with spaces"])
 
+// Upgrade the old global style without overwriting an existing per-menu choice.
+Defaults[.firstSetup] = true
+Defaults[.legacyCustomMenuIconOption] = "original"
+Defaults[.toolbarMenuIconOption] = "no"
+manager.firstSetup()
+precondition(manager.menuIconOption(for: .toolbar) == .no)
+precondition(manager.menuIconOption(for: .context) == .original)
+precondition(Defaults[.legacyCustomMenuIconOption] == nil)
+manager.setMenuIconOption(.simple, for: .toolbar)
+manager.firstSetup()
+precondition(manager.menuIconOption(for: .toolbar) == .simple)
+precondition(manager.menuIconOption(for: .context) == .original)
+
 let cwd = "/Users/test/Project Space"
 let script = "/Users/test/bin/run checks.sh"
 let iTermArgs = try TerminalCommandLauncher.arguments(

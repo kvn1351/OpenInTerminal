@@ -62,16 +62,16 @@ class FinderSync: FIFinderSync {
             guard !DefaultsManager.shared.isHideContextMenuItems else { return NSMenu() }
             let actions = DefaultsManager.shared.contextMenuActions
             guard !actions.isEmpty else {
-                return createDefaultMenu(useSubmenu: DefaultsManager.shared.isContextMenuUseSubmenu)
+                return createDefaultMenu(target: .context, useSubmenu: DefaultsManager.shared.isContextMenuUseSubmenu)
             }
-            return createCustomMenu(actions: actions,
+            return createCustomMenu(actions: actions, target: .context,
                                     useSubmenu: DefaultsManager.shared.isContextMenuUseSubmenu)
 
         case .toolbarItemMenu:
             let actions = DefaultsManager.shared.toolbarMenuActions
-            guard !actions.isEmpty else { return createDefaultMenu(useSubmenu: false) }
-            let menu = createCustomMenu(actions: actions, useSubmenu: false)
-            return menu.items.isEmpty ? createDefaultMenu(useSubmenu: false) : menu
+            guard !actions.isEmpty else { return createDefaultMenu(target: .toolbar, useSubmenu: false) }
+            let menu = createCustomMenu(actions: actions, target: .toolbar, useSubmenu: false)
+            return menu.items.isEmpty ? createDefaultMenu(target: .toolbar, useSubmenu: false) : menu
 
         default:
             return NSMenu(title: "")
@@ -88,22 +88,18 @@ class FinderSync: FIFinderSync {
             .appendingPathExtension("scpt")
     }
     
-    var copyPathItem: NSMenuItem {
-        get {
-            let copyPathItem = NSMenuItem(title: NSLocalizedString("menu.copy_path_to_clipboard",
-                                                                   comment: "Copy path to Clipboard"),
-                                                action: #selector(copyPathToClipboard),
-                                                keyEquivalent: "")
-            copyPathItem.target = self
-            if DefaultsManager.shared.customMenuIconOption == .simple {
-                let copyPathIcon = NSImage(named: "context_menu_icon_path")
-                copyPathItem.image = copyPathIcon
-            } else if DefaultsManager.shared.customMenuIconOption == .original {
-                let copyPathIcon = NSImage(named: "context_menu_icon_color_path")
-                copyPathItem.image = copyPathIcon
-            }
-            return copyPathItem
+    func makeCopyPathItem(for target: CustomMenuTarget) -> NSMenuItem {
+        let item = NSMenuItem(title: NSLocalizedString("menu.copy_path_to_clipboard",
+                                                      comment: "Copy path to Clipboard"),
+                              action: #selector(copyPathToClipboard),
+                              keyEquivalent: "")
+        item.target = self
+        switch DefaultsManager.shared.menuIconOption(for: target) {
+        case .no: break
+        case .simple: item.image = NSImage(named: "context_menu_icon_path")
+        case .original: item.image = NSImage(named: "context_menu_icon_color_path")
         }
+        return item
     }
     
     /// Wraps the given items into a single "Open in..." submenu.
@@ -116,7 +112,7 @@ class FinderSync: FIFinderSync {
         return submenuItem
     }
 
-    func createDefaultMenu(useSubmenu: Bool) -> NSMenu {
+    func createDefaultMenu(target: CustomMenuTarget, useSubmenu: Bool) -> NSMenu {
         let menu = NSMenu(title: "")
 
         // when submenu grouping is enabled, add the items into a separate
@@ -129,7 +125,7 @@ class FinderSync: FIFinderSync {
                                             action: #selector(openDefaultTerminal),
                                             keyEquivalent: "")
         openInTerminalItem.target = self
-        let terminalIcon = DefaultsManager.shared.getAppIcon(terminal)
+        let terminalIcon = DefaultsManager.shared.getAppIcon(terminal, for: target)
         openInTerminalItem.image = terminalIcon
         itemsMenu.addItem(openInTerminalItem)
 
@@ -139,12 +135,12 @@ class FinderSync: FIFinderSync {
                                             action: #selector(openDefaultEditor),
                                             keyEquivalent: "")
         openInEditorItem.target = self
-        let editorIcon = DefaultsManager.shared.getAppIcon(editor)
+        let editorIcon = DefaultsManager.shared.getAppIcon(editor, for: target)
         openInEditorItem.image = editorIcon
         itemsMenu.addItem(openInEditorItem)
 
         // add "Copy Path"
-        itemsMenu.addItem(self.copyPathItem)
+        itemsMenu.addItem(makeCopyPathItem(for: target))
 
         // attach the items menu under a single top level item when needed
         if useSubmenu {
@@ -154,7 +150,7 @@ class FinderSync: FIFinderSync {
         return menu
     }
 
-    func createCustomMenu(actions: [CustomMenuAction], useSubmenu: Bool) -> NSMenu {
+    func createCustomMenu(actions: [CustomMenuAction], target: CustomMenuTarget, useSubmenu: Bool) -> NSMenu {
         let menu = NSMenu(title: "")
         let itemsMenu = useSubmenu ? NSMenu(title: "") : menu
         menuActionsByTag.removeAll(keepingCapacity: true)
@@ -168,12 +164,12 @@ class FinderSync: FIFinderSync {
             menuItem.tag = index + 1
             menuActionsByTag[menuItem.tag] = action
             if let app = action.application {
-                menuItem.image = DefaultsManager.shared.getAppIcon(app)
+                menuItem.image = DefaultsManager.shared.getAppIcon(app, for: target)
             }
             itemsMenu.addItem(menuItem)
         }
 
-        itemsMenu.addItem(copyPathItem)
+        itemsMenu.addItem(makeCopyPathItem(for: target))
         if useSubmenu {
             menu.addItem(makeSubmenuItem(with: itemsMenu))
         }

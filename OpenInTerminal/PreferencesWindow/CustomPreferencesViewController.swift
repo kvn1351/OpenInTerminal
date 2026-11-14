@@ -152,6 +152,7 @@ class CustomPreferencesViewController: PreferencesViewController {
         refreshCustomButtons()
         customMenuTableView.deselectAll(nil)
         customMenuActions = DefaultsManager.shared.menuActions(for: target)
+        refreshIconTypeOptionState()
     }
     
     func offIconTypeButtons() {
@@ -162,7 +163,7 @@ class CustomPreferencesViewController: PreferencesViewController {
     
     func refreshIconTypeOptionState() {
         offIconTypeButtons()
-        let option = DefaultsManager.shared.customMenuIconOption
+        let option = DefaultsManager.shared.menuIconOption(for: customMenuTarget)
         switch option {
         case .no:
             noIconButton.state = .on
@@ -390,19 +391,19 @@ class CustomPreferencesViewController: PreferencesViewController {
     @IBAction func noIconButtonClicked(_ sender: NSButton) {
         offIconTypeButtons()
         noIconButton.state = .on
-        DefaultsManager.shared.customMenuIconOption = .no
+        DefaultsManager.shared.setMenuIconOption(.no, for: customMenuTarget)
     }
     
     @IBAction func simpleIconButtonClicked(_ sender: NSButton) {
         offIconTypeButtons()
         simpleIconButton.state = .on
-        DefaultsManager.shared.customMenuIconOption = .simple
+        DefaultsManager.shared.setMenuIconOption(.simple, for: customMenuTarget)
     }
     
     @IBAction func originalIconButtonClicked(_ sender: NSButton) {
         offIconTypeButtons()
         originalIconButton.state = .on
-        DefaultsManager.shared.customMenuIconOption = .original
+        DefaultsManager.shared.setMenuIconOption(.original, for: customMenuTarget)
     }
 }
 
